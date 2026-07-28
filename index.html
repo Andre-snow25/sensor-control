@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SensorControl</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"></div>
+      <div class="sidebar-title">SensorControl</div>
+    </div>
+    <div class="sidebar-item active" data-page="lista">Sensores</div>
+    <div class="sidebar-item" data-page="movimentacao">Movimentação</div>
+    <div class="sidebar-item" data-page="estrutura">Setores / Linhas / Máquinas</div>
+    <div class="sidebar-item" data-page="dashboard">Dashboard</div>
+    <div class="sidebar-footer">Uso interno · Manutenção<br/>v1.0</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div id="error-banner" class="error-banner hidden"></div>
+    <div id="page-content"></div>
+  </div>
+</div>
+
+<!-- Modal de cadastro/edição de sensor -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header" id="modal-title">Cadastrar Sensor</div>
+    <div class="modal-content" id="modal-content"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancelar">Cancelar</button>
+      <button class="btn-primary" id="btn-salvar">Salvar Sensor</button>
+    </div>
+  </div>
+</div>
+
+<!-- SDK do Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="options.js"></script>
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
