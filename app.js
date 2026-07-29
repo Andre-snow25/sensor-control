@@ -291,6 +291,13 @@ function wireModalEvents(sensor) {
       const mostrar = camposVisiveis === null || secoes.some(s => camposVisiveis.includes(s));
       el.classList.toggle('hidden', !mostrar);
     });
+
+    // Troca as opções do campo Formato conforme o tipo (ex: Conectores usa Reto/90°)
+    const formatoSelect = document.getElementById('m-formato');
+    const opcoesFormato = FORMATO_OPTS_POR_TIPO[tipoSelect.value] || FORMATO_OPTS;
+    const valorAtualFormato = formatoSelect.value;
+    formatoSelect.innerHTML = `<option value="">Selecione...</option>${opcoesFormato.map(f => `<option value="${f}" ${valorAtualFormato === f ? 'selected' : ''}>${f}</option>`).join('')}`;
+    document.getElementById('rosca-field').classList.toggle('hidden', formatoSelect.value !== 'Cilíndrico roscado');
   }
 
   function atualizarDistancia() {

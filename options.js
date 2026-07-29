@@ -46,3 +46,9 @@ const CAMPOS_POR_TIPO = {
   'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'recursos']
 };
 
+// Sobrescreve as opções do campo "Formato" pra tipos específicos.
+// Tipo que não estiver aqui usa FORMATO_OPTS (a lista padrão).
+const FORMATO_OPTS_POR_TIPO = {
+  'Conectores': ['Reto', '90°']
+};
+
