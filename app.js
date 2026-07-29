@@ -306,7 +306,7 @@ function modalFormHtml(s) {
       <div class="field-group grid" id="formato-grid" style="grid-template-columns:1fr 1fr;">
         <div><span class="field-label">Formato</span><select id="m-formato" style="width:100%;">
           <option value="">Selecione...</option>
-          ${FORMATO_OPTS.map(f => `<option value="${f}" ${s.Formato === f ? 'selected' : ''}>${f}</option>`).join('')}
+          ${(FORMATO_OPTS_POR_TIPO[s.Tipo] || FORMATO_OPTS).map(f => `<option value="${f}" ${s.Formato === f ? 'selected' : ''}>${f}</option>`).join('')}
         </select></div>
         <div id="rosca-field" class="${s.Formato === 'Cilíndrico roscado' ? '' : 'hidden'}"><span class="field-label">Rosca</span>${selectFull('m-rosca', ROSCA_OPTS, s.Rosca)}</div>
       </div>
