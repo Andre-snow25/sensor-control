@@ -44,13 +44,15 @@ const PINOS_OPTS = ['3 Pinos', '4 Pinos'];
 // cilindro, genero, pinos, recursos
 // ============================================================
 const CAMPOS_POR_TIPO = {
-  'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos']
+  'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos'],
+  'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
 // Tipo que não estiver aqui usa FORMATO_OPTS (a lista padrão).
 const FORMATO_OPTS_POR_TIPO = {
-  'Conectores': ['Reto', '90°']
+  'Conectores': ['Reto', '90°'],
+  'Espelho Reflexivo': ['Retangular', 'Redondo']
 };
 
 // Seções usadas como filtro/especificação pra tipos que NÃO têm entrada
@@ -61,20 +63,20 @@ const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato',
 const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
   formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
-  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos'
+  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos', tamanho: 'Tamanho'
 };
 
 // Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
 const SECAO_PARA_FILTRO = {
   distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
   formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
-  material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos'
+  material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho'
 };
 
 // Rótulos amigáveis pra cada seção, usados nos filtros
 const SECAO_LABEL = {
   distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
   formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
-  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos'
+  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos', tamanho: 'Tamanho'
 };
 

@@ -338,6 +338,11 @@ function modalFormHtml(s) {
       <div data-secao="pinos"><span class="field-label">Quantidade de pinos</span>${selectFull('m-pinos', PINOS_OPTS, s.Pinos)}</div>
     </div>
 
+    <div data-secao="tamanho" class="field-group">
+      <span class="field-label">Tamanho</span>
+      <input id="m-tamanho" value="${s.Tamanho || ''}" placeholder="Ex: 81mm (redondo) ou 20x20 (retangular)">
+    </div>
+
     <div data-secao="recursos">
       <div class="section-title-modal">Recursos</div>
       <div class="toggle-group" id="m-recursos">
@@ -503,6 +508,7 @@ async function salvarSensor() {
       CilindroFios: val('m-cilindroFios'),
       Genero: val('m-genero'),
       Pinos: val('m-pinos'),
+      Tamanho: val('m-tamanho'),
       MarcaLogoUrl: marcaLogoUrl,
       FotoUrl: fotoUrl,
       Recursos: state.modalRecursos

@@ -9,7 +9,7 @@ const CAMPO_MAP = {
   FormaComutacao: 'forma_comutacao', Formato: 'formato', Rosca: 'rosca',
   IP: 'ip', Conexao: 'conexao', Material: 'material', Aplicacao: 'aplicacao',
   CilindroTipo: 'cilindro_tipo', CilindroMontagem: 'cilindro_montagem',
-  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero', MarcaLogoUrl: 'marca_logo_url', Pinos: 'pinos'
+  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero', MarcaLogoUrl: 'marca_logo_url', Pinos: 'pinos', Tamanho: 'tamanho'
 };
 
 function paraColuna(dadosPascal) {
@@ -49,7 +49,7 @@ const Api = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
       logica: 'logica_saida', tensao: 'tensao', formato: 'formato',
       rosca: 'rosca', ip: 'ip', conexao: 'conexao', material: 'material',
-      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero'
+      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho'
     };
     Object.entries(mapaFiltros).forEach(([key, coluna]) => {
       if (filtros[key]) query = query.eq(coluna, filtros[key]);
