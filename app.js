@@ -214,9 +214,11 @@ function sensorRowHtml(s) {
       <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
-        <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
-        <button class="btn-icon" data-duplicar="${s.Id}" title="Criar sensor similar" style="background:var(--text-light);">⧉</button>
-        <button class="btn-icon danger" data-delete="${s.Id}" title="Remover">×</button>
+        <div class="acoes-linha">
+          <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
+          <button class="btn-icon" data-duplicar="${s.Id}" title="Criar sensor similar" style="background:var(--text-light);">⧉</button>
+          <button class="btn-icon danger" data-delete="${s.Id}" title="Remover">×</button>
+        </div>
       </td>
     </tr>
   `;
