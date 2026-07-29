@@ -45,7 +45,8 @@ const PINOS_OPTS = ['3 Pinos', '4 Pinos'];
 // ============================================================
 const CAMPOS_POR_TIPO = {
   'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos'],
-  'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao']
+  'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao'],
+  'Botoeira': ['tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
