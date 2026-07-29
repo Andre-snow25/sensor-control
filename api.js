@@ -38,7 +38,7 @@ async function checarErro(promise, mensagemPadrao) {
 const Api = {
   // ---------- Sensores ----------
   async listarSensores(filtros = {}) {
-    let query = supabaseClient.from('sensores').select('*').order('nome');
+    let query = supabaseClient.from('sensores').select('*').order('caixa', { ascending: true, nullsFirst: false });
 
     const mapaFiltros = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
