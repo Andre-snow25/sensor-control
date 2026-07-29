@@ -253,7 +253,7 @@ function modalFormHtml(s) {
     </div>
 
     <div data-secao="genero" class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Gênero</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
+      <div><span class="field-label">Macho / Fêmea</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
     </div>
 
     <div data-secao="recursos">
