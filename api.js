@@ -9,7 +9,7 @@ const CAMPO_MAP = {
   FormaComutacao: 'forma_comutacao', Formato: 'formato', Rosca: 'rosca',
   IP: 'ip', Conexao: 'conexao', Material: 'material', Aplicacao: 'aplicacao',
   CilindroTipo: 'cilindro_tipo', CilindroMontagem: 'cilindro_montagem',
-  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero'
+  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero', MarcaLogoUrl: 'marca_logo_url'
 };
 
 function paraColuna(dadosPascal) {

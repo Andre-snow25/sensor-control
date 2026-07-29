@@ -162,7 +162,7 @@ function sensorRowHtml(s) {
       <td><div class="foto-placeholder"></div></td>
       <td style="font-weight:600;">${s.Nome}</td>
       <td>${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
-      <td>${s.Marca || '—'}</td>
+      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:18px; height:18px; object-fit:contain; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
         <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
@@ -182,9 +182,11 @@ async function openModal(id = null) {
     sensor = await Api.buscarSensor(id);
     state.modalRecursos = sensor.Recursos || [];
     state.modalFormaComutacao = sensor.FormaComutacao || '';
+    state.modalMarcaLogoUrl = sensor.MarcaLogoUrl || null;
   } else {
     state.modalRecursos = [];
     state.modalFormaComutacao = '';
+    state.modalMarcaLogoUrl = null;
   }
 
   document.getElementById('modal-title').textContent = id ? 'Editar Sensor' : 'Cadastrar Sensor';
@@ -200,7 +202,11 @@ function modalFormHtml(s) {
       <div><span class="field-label">Nome</span><input id="m-nome" value="${s.Nome || ''}"></div>
       <div><span class="field-label">Cód. Fabricante</span><input id="m-codFabricante" value="${s.CodFabricante || ''}"></div>
       <div><span class="field-label">Cód. DV</span><input id="m-codDV" value="${s.CodDV || ''}"></div>
-      <div><span class="field-label">Marca</span><input id="m-marca" value="${s.Marca || ''}"></div>
+      <div style="position:relative;">
+        <span class="field-label">Marca</span>
+        <input id="m-marca" value="${s.Marca || ''}" autocomplete="off">
+        <div id="marca-sugestoes" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 8px 20px rgba(0,0,0,.1); z-index:10; max-height:180px; overflow-y:auto;"></div>
+      </div>
       <div><span class="field-label">Estoque</span><input id="m-estoque" type="number" value="${s.Estoque ?? 0}"></div>
     </div>
 
@@ -281,6 +287,52 @@ function selectFull(id, options, selected) {
 function wireModalEvents(sensor) {
   const tipoSelect = document.getElementById('m-tipo');
   const distList = document.getElementById('dist-list');
+
+  // ---- Autocomplete de logo da marca (API pública Clearbit, sem chave) ----
+  const marcaInput = document.getElementById('m-marca');
+  const marcaSugestoes = document.getElementById('marca-sugestoes');
+  let debounceTimer;
+
+  marcaInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    state.modalMarcaLogoUrl = null; // se editar o texto manualmente, invalida o logo escolhido
+    const termo = marcaInput.value.trim();
+    if (termo.length < 2) {
+      marcaSugestoes.innerHTML = '';
+      return;
+    }
+    debounceTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(termo)}`);
+        const empresas = await res.json();
+        if (!empresas.length) { marcaSugestoes.innerHTML = ''; return; }
+        marcaSugestoes.innerHTML = empresas.slice(0, 5).map(emp => `
+          <div class="marca-sugestao" data-nome="${emp.name}" data-logo="${emp.logo}"
+               style="display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:pointer; font-size:12.5px;">
+            <img src="${emp.logo}" style="width:20px; height:20px; object-fit:contain;" onerror="this.style.display='none'">
+            <span>${emp.name}</span>
+          </div>
+        `).join('');
+        marcaSugestoes.querySelectorAll('.marca-sugestao').forEach(item => {
+          item.addEventListener('mouseenter', () => item.style.background = '#f6f6f6');
+          item.addEventListener('mouseleave', () => item.style.background = '#fff');
+          item.addEventListener('click', () => {
+            marcaInput.value = item.dataset.nome;
+            state.modalMarcaLogoUrl = item.dataset.logo;
+            marcaSugestoes.innerHTML = '';
+          });
+        });
+      } catch (err) {
+        marcaSugestoes.innerHTML = ''; // falha na busca não deve travar o formulário
+      }
+    }, 350);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!marcaInput.contains(e.target) && !marcaSugestoes.contains(e.target)) {
+      marcaSugestoes.innerHTML = '';
+    }
+  });
 
   // Mostra só as seções relevantes pro tipo selecionado. Tipos que não têm
   // uma entrada em CAMPOS_POR_TIPO mostram o formulário completo (padrão).
@@ -389,6 +441,7 @@ async function salvarSensor() {
     CilindroMontagem: val('m-cilindroMontagem'),
     CilindroFios: val('m-cilindroFios'),
     Genero: val('m-genero'),
+    MarcaLogoUrl: state.modalMarcaLogoUrl,
     Recursos: state.modalRecursos
   };
 
