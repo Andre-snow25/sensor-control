@@ -28,3 +28,21 @@ const RECURSOS_OPTS = ['Ajuste de sensibilidade', 'LED indicador', 'Blindado', '
 const CILINDRO_TIPO_OPTS = ['Magnético', 'Indutivo'];
 const CILINDRO_MONTAGEM_OPTS = ['Trilho T', 'Haste', 'Braçadeira'];
 const CILINDRO_FIOS_OPTS = ['2 fios', '3 fios', '4 fios'];
+
+const GENERO_OPTS = ['Macho', 'Fêmea'];
+
+// ============================================================
+// Campos por tipo: define quais seções do formulário aparecem
+// pra cada tipo. Todo tipo que NÃO estiver aqui usa o formulário
+// completo (comportamento padrão, pra não quebrar os sensores
+// já cadastrados). Pra adicionar um novo tipo com campos próprios,
+// só criar uma nova entrada aqui.
+//
+// Seções disponíveis: distancia, tipoSaida, logica, tensao,
+// formaComutacao, formato, ip, conexao, material, aplicacao,
+// cilindro, genero, recursos
+// ============================================================
+const CAMPOS_POR_TIPO = {
+  'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'recursos']
+};
+

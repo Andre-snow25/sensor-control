@@ -151,7 +151,7 @@ function selectHtml(id, placeholder, options) {
 }
 
 function sensorRowHtml(s) {
-  const specs = [s.Tipo, s.Distancia, s.TipoSaida].filter(Boolean);
+  const specs = [s.Tipo, s.Distancia, s.TipoSaida, s.Genero].filter(Boolean);
   const extras = (s.Recursos || []).length;
   const estoqueBaixo = s.Estoque <= 3;
   return `
@@ -213,47 +213,57 @@ function modalFormHtml(s) {
       <button type="button" class="btn-secondary" id="btn-novo-tipo" style="white-space:nowrap;" title="Criar novo tipo de sensor">+ Novo tipo</button>
     </div>
 
-    <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Distância</span><input id="m-distancia" list="dist-list" value="${s.Distancia || ''}" placeholder="Selecione o tipo ou digite"><datalist id="dist-list"></datalist></div>
+    <div class="field-group grid" id="grid-basico" style="grid-template-columns:1fr 1fr;">
+      <div data-secao="distancia"><span class="field-label">Distância</span><input id="m-distancia" list="dist-list" value="${s.Distancia || ''}" placeholder="Selecione o tipo ou digite"><datalist id="dist-list"></datalist></div>
       <div><span class="field-label">Nº Caixa</span><input id="m-caixa" value="${s.Caixa || ''}"></div>
     </div>
 
-    <div class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div data-secao="tipoSaida,logica,tensao" class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
       <div><span class="field-label">Tipo Saída</span>${selectFull('m-tipoSaida', TIPO_SAIDA_OPTS, s.TipoSaida)}</div>
       <div><span class="field-label">Lógica</span>${selectFull('m-logica', LOGICA_OPTS, s.LogicaSaida)}</div>
       <div><span class="field-label">Tensão</span>${selectFull('m-tensao', TENSAO_OPTS, s.Tensao)}</div>
     </div>
 
-    <div class="section-title-modal">Forma de Comutação</div>
-    <div class="toggle-group" id="m-formaComutacao">
-      ${FORMA_COMUTACAO_OPTS.map(f => `<button type="button" class="toggle-btn ${state.modalFormaComutacao === f ? 'active' : ''}" data-value="${f}">${f}</button>`).join('')}
+    <div data-secao="formaComutacao">
+      <div class="section-title-modal">Forma de Comutação</div>
+      <div class="toggle-group" id="m-formaComutacao">
+        ${FORMA_COMUTACAO_OPTS.map(f => `<button type="button" class="toggle-btn ${state.modalFormaComutacao === f ? 'active' : ''}" data-value="${f}">${f}</button>`).join('')}
+      </div>
     </div>
 
-    <div class="section-title-modal">Formato</div>
-    <div class="field-group grid" id="formato-grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Formato</span><select id="m-formato" style="width:100%;">
-        <option value="">Selecione...</option>
-        ${FORMATO_OPTS.map(f => `<option value="${f}" ${s.Formato === f ? 'selected' : ''}>${f}</option>`).join('')}
-      </select></div>
-      <div id="rosca-field" class="${s.Formato === 'Cilíndrico roscado' ? '' : 'hidden'}"><span class="field-label">Rosca</span>${selectFull('m-rosca', ROSCA_OPTS, s.Rosca)}</div>
+    <div data-secao="formato">
+      <div class="section-title-modal">Formato</div>
+      <div class="field-group grid" id="formato-grid" style="grid-template-columns:1fr 1fr;">
+        <div><span class="field-label">Formato</span><select id="m-formato" style="width:100%;">
+          <option value="">Selecione...</option>
+          ${FORMATO_OPTS.map(f => `<option value="${f}" ${s.Formato === f ? 'selected' : ''}>${f}</option>`).join('')}
+        </select></div>
+        <div id="rosca-field" class="${s.Formato === 'Cilíndrico roscado' ? '' : 'hidden'}"><span class="field-label">Rosca</span>${selectFull('m-rosca', ROSCA_OPTS, s.Rosca)}</div>
+      </div>
     </div>
 
-    <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
+    <div data-secao="ip,conexao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
       <div><span class="field-label">IP</span>${selectFull('m-ip', IP_OPTS, s.IP)}</div>
       <div><span class="field-label">Conexão</span>${selectFull('m-conexao', CONEXAO_OPTS, s.Conexao)}</div>
     </div>
 
-    <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
+    <div data-secao="material,aplicacao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
       <div><span class="field-label">Material</span>${selectFull('m-material', MATERIAL_OPTS, s.Material)}</div>
       <div><span class="field-label">Aplicação</span>${selectFull('m-aplicacao', APLICACAO_OPTS, s.Aplicacao)}</div>
     </div>
 
-    <div class="section-title-modal">Recursos</div>
-    <div class="toggle-group" id="m-recursos">
-      ${RECURSOS_OPTS.map(r => `<button type="button" class="toggle-btn ${state.modalRecursos.includes(r) ? 'active' : ''}" data-value="${r}">${r}</button>`).join('')}
+    <div data-secao="genero" class="field-group grid" style="grid-template-columns:1fr 1fr;">
+      <div><span class="field-label">Gênero</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
     </div>
 
-    <div id="cilindro-section" class="${s.Tipo === 'Sensor para Cilindro Pneumático' ? '' : 'hidden'}">
+    <div data-secao="recursos">
+      <div class="section-title-modal">Recursos</div>
+      <div class="toggle-group" id="m-recursos">
+        ${RECURSOS_OPTS.map(r => `<button type="button" class="toggle-btn ${state.modalRecursos.includes(r) ? 'active' : ''}" data-value="${r}">${r}</button>`).join('')}
+      </div>
+    </div>
+
+    <div id="cilindro-section" data-secao="cilindro" class="${s.Tipo === 'Sensor para Cilindro Pneumático' ? '' : 'hidden'}">
       <div class="section-title-modal">Cilindro</div>
       <div class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
         <div><span class="field-label">Tipo</span>${selectFull('m-cilindroTipo', CILINDRO_TIPO_OPTS, s.CilindroTipo)}</div>
@@ -272,13 +282,30 @@ function wireModalEvents(sensor) {
   const tipoSelect = document.getElementById('m-tipo');
   const distList = document.getElementById('dist-list');
 
+  // Mostra só as seções relevantes pro tipo selecionado. Tipos que não têm
+  // uma entrada em CAMPOS_POR_TIPO mostram o formulário completo (padrão).
+  function aplicarCamposPorTipo() {
+    const camposVisiveis = CAMPOS_POR_TIPO[tipoSelect.value] || null; // null = mostrar tudo
+    document.querySelectorAll('[data-secao]').forEach(el => {
+      const secoes = el.dataset.secao.split(',');
+      const mostrar = camposVisiveis === null || secoes.some(s => camposVisiveis.includes(s));
+      el.classList.toggle('hidden', !mostrar);
+    });
+  }
+
   function atualizarDistancia() {
     const opts = DISTANCIA_MAP[tipoSelect.value] || [];
     distList.innerHTML = opts.map(d => `<option value="${d}">`).join('');
-    document.getElementById('cilindro-section').classList.toggle('hidden', tipoSelect.value !== 'Sensor para Cilindro Pneumático');
+    document.getElementById('cilindro-section').classList.toggle('hidden',
+      tipoSelect.value !== 'Sensor para Cilindro Pneumático');
   }
+
   atualizarDistancia();
-  tipoSelect.addEventListener('change', atualizarDistancia);
+  aplicarCamposPorTipo();
+  tipoSelect.addEventListener('change', () => {
+    atualizarDistancia();
+    aplicarCamposPorTipo();
+  });
 
   document.getElementById('btn-novo-tipo').addEventListener('click', async () => {
     const nome = prompt('Nome do novo tipo de sensor:');
@@ -289,6 +316,7 @@ function wireModalEvents(sensor) {
       const valorAtual = tipoSelect.value;
       tipoSelect.innerHTML = `<option value="">Selecione...</option>${state.tiposSensores.map(t => `<option value="${t}" ${t === nome.trim() ? 'selected' : ''}>${t}</option>`).join('')}`;
       atualizarDistancia();
+      aplicarCamposPorTipo();
     } catch (err) {
       showError(err.message.toLowerCase().includes('duplicate') || err.message.toLowerCase().includes('unique')
         ? 'Esse tipo já existe.' : err.message);
@@ -353,6 +381,7 @@ async function salvarSensor() {
     CilindroTipo: val('m-cilindroTipo'),
     CilindroMontagem: val('m-cilindroMontagem'),
     CilindroFios: val('m-cilindroFios'),
+    Genero: val('m-genero'),
     Recursos: state.modalRecursos
   };
 
