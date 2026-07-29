@@ -159,7 +159,7 @@ function sensorRowHtml(s) {
       <td>${s.Caixa || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodFabricante || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
-      <td><div class="foto-placeholder"></div></td>
+      <td>${s.FotoUrl ? `<img src="${s.FotoUrl}" style="width:44px; height:44px; object-fit:cover; border-radius:6px;">` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
       <td>${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
       <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:18px; height:18px; object-fit:contain; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
@@ -183,10 +183,12 @@ async function openModal(id = null) {
     state.modalRecursos = sensor.Recursos || [];
     state.modalFormaComutacao = sensor.FormaComutacao || '';
     state.modalMarcaLogoUrl = sensor.MarcaLogoUrl || null;
+    state.modalFotoUrl = sensor.FotoUrl || null;
   } else {
     state.modalRecursos = [];
     state.modalFormaComutacao = '';
     state.modalMarcaLogoUrl = null;
+    state.modalFotoUrl = null;
   }
 
   document.getElementById('modal-title').textContent = id ? 'Editar Sensor' : 'Cadastrar Sensor';
@@ -202,12 +204,21 @@ function modalFormHtml(s) {
       <div><span class="field-label">Nome</span><input id="m-nome" value="${s.Nome || ''}"></div>
       <div><span class="field-label">Cód. Fabricante</span><input id="m-codFabricante" value="${s.CodFabricante || ''}"></div>
       <div><span class="field-label">Cód. DV</span><input id="m-codDV" value="${s.CodDV || ''}"></div>
-      <div style="position:relative;">
-        <span class="field-label">Marca</span>
-        <input id="m-marca" value="${s.Marca || ''}" autocomplete="off">
-        <div id="marca-sugestoes" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 8px 20px rgba(0,0,0,.1); z-index:10; max-height:180px; overflow-y:auto;"></div>
-      </div>
+      <div><span class="field-label">Marca</span><input id="m-marca" value="${s.Marca || ''}"></div>
       <div><span class="field-label">Estoque</span><input id="m-estoque" type="number" value="${s.Estoque ?? 0}"></div>
+    </div>
+
+    <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
+      <div>
+        <span class="field-label">Logo da marca</span>
+        <input id="m-logo-marca-file" type="file" accept="image/*" style="width:100%; font-size:12px;">
+        <div id="preview-logo-marca" style="margin-top:6px;">${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="height:36px; object-fit:contain;">` : ''}</div>
+      </div>
+      <div>
+        <span class="field-label">Foto do sensor</span>
+        <input id="m-foto-sensor-file" type="file" accept="image/*" style="width:100%; font-size:12px;">
+        <div id="preview-foto-sensor" style="margin-top:6px;">${s.FotoUrl ? `<img src="${s.FotoUrl}" style="height:56px; object-fit:contain; border-radius:6px;">` : ''}</div>
+      </div>
     </div>
 
     <div class="section-title-modal">Tipo</div>
@@ -288,50 +299,18 @@ function wireModalEvents(sensor) {
   const tipoSelect = document.getElementById('m-tipo');
   const distList = document.getElementById('dist-list');
 
-  // ---- Autocomplete de logo da marca (API pública Clearbit, sem chave) ----
-  const marcaInput = document.getElementById('m-marca');
-  const marcaSugestoes = document.getElementById('marca-sugestoes');
-  let debounceTimer;
-
-  marcaInput.addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-    state.modalMarcaLogoUrl = null; // se editar o texto manualmente, invalida o logo escolhido
-    const termo = marcaInput.value.trim();
-    if (termo.length < 2) {
-      marcaSugestoes.innerHTML = '';
-      return;
-    }
-    debounceTimer = setTimeout(async () => {
-      try {
-        const res = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(termo)}`);
-        const empresas = await res.json();
-        if (!empresas.length) { marcaSugestoes.innerHTML = ''; return; }
-        marcaSugestoes.innerHTML = empresas.slice(0, 5).map(emp => `
-          <div class="marca-sugestao" data-nome="${emp.name}" data-logo="${emp.logo}"
-               style="display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:pointer; font-size:12.5px;">
-            <img src="${emp.logo}" style="width:20px; height:20px; object-fit:contain;" onerror="this.style.display='none'">
-            <span>${emp.name}</span>
-          </div>
-        `).join('');
-        marcaSugestoes.querySelectorAll('.marca-sugestao').forEach(item => {
-          item.addEventListener('mouseenter', () => item.style.background = '#f6f6f6');
-          item.addEventListener('mouseleave', () => item.style.background = '#fff');
-          item.addEventListener('click', () => {
-            marcaInput.value = item.dataset.nome;
-            state.modalMarcaLogoUrl = item.dataset.logo;
-            marcaSugestoes.innerHTML = '';
-          });
-        });
-      } catch (err) {
-        marcaSugestoes.innerHTML = ''; // falha na busca não deve travar o formulário
-      }
-    }, 350);
+  // Preview instantâneo das imagens escolhidas (antes mesmo de salvar)
+  document.getElementById('m-logo-marca-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('preview-logo-marca').innerHTML =
+      `<img src="${URL.createObjectURL(file)}" style="height:36px; object-fit:contain;">`;
   });
-
-  document.addEventListener('click', (e) => {
-    if (!marcaInput.contains(e.target) && !marcaSugestoes.contains(e.target)) {
-      marcaSugestoes.innerHTML = '';
-    }
+  document.getElementById('m-foto-sensor-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('preview-foto-sensor').innerHTML =
+      `<img src="${URL.createObjectURL(file)}" style="height:56px; object-fit:contain; border-radius:6px;">`;
   });
 
   // Mostra só as seções relevantes pro tipo selecionado. Tipos que não têm
@@ -417,40 +396,55 @@ function closeModal() {
 
 async function salvarSensor() {
   const val = (id) => document.getElementById(id)?.value || null;
+  const btnSalvar = document.getElementById('btn-salvar');
 
-  const dados = {
-    Nome: val('m-nome'),
-    CodFabricante: val('m-codFabricante'),
-    CodDV: val('m-codDV'),
-    Marca: val('m-marca'),
-    Estoque: parseInt(val('m-estoque')) || 0,
-    Tipo: val('m-tipo'),
-    Distancia: val('m-distancia'),
-    Caixa: val('m-caixa'),
-    TipoSaida: val('m-tipoSaida'),
-    LogicaSaida: val('m-logica'),
-    Tensao: val('m-tensao'),
-    FormaComutacao: state.modalFormaComutacao || null,
-    Formato: val('m-formato'),
-    Rosca: val('m-rosca'),
-    IP: val('m-ip'),
-    Conexao: val('m-conexao'),
-    Material: val('m-material'),
-    Aplicacao: val('m-aplicacao'),
-    CilindroTipo: val('m-cilindroTipo'),
-    CilindroMontagem: val('m-cilindroMontagem'),
-    CilindroFios: val('m-cilindroFios'),
-    Genero: val('m-genero'),
-    MarcaLogoUrl: state.modalMarcaLogoUrl,
-    Recursos: state.modalRecursos
-  };
-
-  if (!dados.Nome) {
-    showError('Informe o nome do sensor.');
-    return;
-  }
+  btnSalvar.disabled = true;
+  btnSalvar.textContent = 'Salvando...';
 
   try {
+    // Faz upload das imagens escolhidas (se houver) antes de gravar o sensor
+    const arquivoLogo = document.getElementById('m-logo-marca-file').files[0];
+    const arquivoFoto = document.getElementById('m-foto-sensor-file').files[0];
+
+    let marcaLogoUrl = state.modalMarcaLogoUrl;
+    let fotoUrl = state.modalFotoUrl;
+
+    if (arquivoLogo) marcaLogoUrl = await Api.enviarImagem(arquivoLogo, 'logos');
+    if (arquivoFoto) fotoUrl = await Api.enviarImagem(arquivoFoto, 'sensores');
+
+    const dados = {
+      Nome: val('m-nome'),
+      CodFabricante: val('m-codFabricante'),
+      CodDV: val('m-codDV'),
+      Marca: val('m-marca'),
+      Estoque: parseInt(val('m-estoque')) || 0,
+      Tipo: val('m-tipo'),
+      Distancia: val('m-distancia'),
+      Caixa: val('m-caixa'),
+      TipoSaida: val('m-tipoSaida'),
+      LogicaSaida: val('m-logica'),
+      Tensao: val('m-tensao'),
+      FormaComutacao: state.modalFormaComutacao || null,
+      Formato: val('m-formato'),
+      Rosca: val('m-rosca'),
+      IP: val('m-ip'),
+      Conexao: val('m-conexao'),
+      Material: val('m-material'),
+      Aplicacao: val('m-aplicacao'),
+      CilindroTipo: val('m-cilindroTipo'),
+      CilindroMontagem: val('m-cilindroMontagem'),
+      CilindroFios: val('m-cilindroFios'),
+      Genero: val('m-genero'),
+      MarcaLogoUrl: marcaLogoUrl,
+      FotoUrl: fotoUrl,
+      Recursos: state.modalRecursos
+    };
+
+    if (!dados.Nome) {
+      showError('Informe o nome do sensor.');
+      return;
+    }
+
     if (state.editSensorId) {
       await Api.atualizarSensor(state.editSensorId, dados);
     } else {
@@ -460,6 +454,9 @@ async function salvarSensor() {
     render();
   } catch (err) {
     showError(err.message);
+  } finally {
+    btnSalvar.disabled = false;
+    btnSalvar.textContent = 'Salvar Sensor';
   }
 }
 

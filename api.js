@@ -126,6 +126,16 @@ const Api = {
     return { mensagem: 'Sensor removido com sucesso' };
   },
 
+  // ---------- Upload de imagens (Supabase Storage) ----------
+  async enviarImagem(arquivo, pasta) {
+    const extensao = arquivo.name.split('.').pop();
+    const nomeArquivo = `${pasta}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
+    const { error } = await supabaseClient.storage.from('sensor-images').upload(nomeArquivo, arquivo);
+    if (error) throw new Error(error.message || 'Erro ao enviar imagem');
+    const { data } = supabaseClient.storage.from('sensor-images').getPublicUrl(nomeArquivo);
+    return data.publicUrl;
+  },
+
   // ---------- Tipos de sensores ----------
   async listarTipos() {
     const linhas = await checarErro(
