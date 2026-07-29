@@ -31,7 +31,12 @@ function paraPascal(linha) {
 
 async function checarErro(promise, mensagemPadrao) {
   const { data, error } = await promise;
-  if (error) throw new Error(error.message || mensagemPadrao);
+  if (error) {
+    if (error.message && error.message.includes('sensores_caixa_key')) {
+      throw new Error('Esse número de caixa já está em uso por outro sensor. Escolha um número diferente.');
+    }
+    throw new Error(error.message || mensagemPadrao);
+  }
   return data;
 }
 
