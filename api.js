@@ -126,6 +126,22 @@ const Api = {
     return { mensagem: 'Sensor removido com sucesso' };
   },
 
+  // ---------- Tipos de sensores ----------
+  async listarTipos() {
+    const linhas = await checarErro(
+      supabaseClient.from('tipos_sensores').select('*').order('nome'),
+      'Erro ao buscar tipos de sensores'
+    );
+    return linhas.map(l => l.nome);
+  },
+
+  async criarTipo(nome) {
+    return checarErro(
+      supabaseClient.from('tipos_sensores').insert({ nome }).select().single(),
+      'Erro ao criar tipo de sensor'
+    );
+  },
+
   // ---------- Estrutura (setores / linhas / máquinas) ----------
   async listarEstrutura() {
     const [setores, linhas, maquinas] = await Promise.all([
