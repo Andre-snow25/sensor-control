@@ -159,10 +159,10 @@ function sensorRowHtml(s) {
       <td>${s.Caixa || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodFabricante || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
-      <td>${s.FotoUrl ? `<img src="${s.FotoUrl}" style="width:44px; height:44px; object-fit:cover; border-radius:6px;">` : '<div class="foto-placeholder"></div>'}</td>
+      <td>${s.FotoUrl ? `<div style="width:44px; height:44px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:cover; display:block;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
       <td>${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
-      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:18px; height:18px; object-fit:contain; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
+      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:20px; height:20px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:3px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
         <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
@@ -212,12 +212,12 @@ function modalFormHtml(s) {
       <div>
         <span class="field-label">Logo da marca</span>
         <input id="m-logo-marca-file" type="file" accept="image/*" style="width:100%; font-size:12px;">
-        <div id="preview-logo-marca" style="margin-top:6px;">${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="height:36px; object-fit:contain;">` : ''}</div>
+        <div id="preview-logo-marca" style="margin-top:6px; width:60px; height:36px; border-radius:4px; overflow:hidden; ${s.MarcaLogoUrl ? 'background:#f6f6f6;' : ''}">${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:100%; height:100%; object-fit:contain;">` : ''}</div>
       </div>
       <div>
         <span class="field-label">Foto do sensor</span>
         <input id="m-foto-sensor-file" type="file" accept="image/*" style="width:100%; font-size:12px;">
-        <div id="preview-foto-sensor" style="margin-top:6px;">${s.FotoUrl ? `<img src="${s.FotoUrl}" style="height:56px; object-fit:contain; border-radius:6px;">` : ''}</div>
+        <div id="preview-foto-sensor" style="margin-top:6px; width:64px; height:64px; border-radius:6px; overflow:hidden; ${s.FotoUrl ? 'background:#f6f6f6;' : ''}">${s.FotoUrl ? `<img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
       </div>
     </div>
 
@@ -303,14 +303,16 @@ function wireModalEvents(sensor) {
   document.getElementById('m-logo-marca-file').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    document.getElementById('preview-logo-marca').innerHTML =
-      `<img src="${URL.createObjectURL(file)}" style="height:36px; object-fit:contain;">`;
+    const preview = document.getElementById('preview-logo-marca');
+    preview.style.background = '#f6f6f6';
+    preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100%; height:100%; object-fit:contain;">`;
   });
   document.getElementById('m-foto-sensor-file').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    document.getElementById('preview-foto-sensor').innerHTML =
-      `<img src="${URL.createObjectURL(file)}" style="height:56px; object-fit:contain; border-radius:6px;">`;
+    const preview = document.getElementById('preview-foto-sensor');
+    preview.style.background = '#f6f6f6';
+    preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100%; height:100%; object-fit:cover;">`;
   });
 
   // Mostra só as seções relevantes pro tipo selecionado. Tipos que não têm
