@@ -174,6 +174,9 @@ async function renderLista() {
   content.querySelectorAll('[data-edit]').forEach(btn => {
     btn.addEventListener('click', () => openModal(btn.dataset.edit));
   });
+  content.querySelectorAll('[data-duplicar]').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.duplicar, { duplicar: true }));
+  });
   content.querySelectorAll('[data-delete]').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (confirm('Remover este sensor? Essa ação não pode ser desfeita.')) {
@@ -212,6 +215,7 @@ function sensorRowHtml(s) {
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
         <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
+        <button class="btn-icon" data-duplicar="${s.Id}" title="Criar sensor similar" style="background:var(--text-light);">⧉</button>
         <button class="btn-icon danger" data-delete="${s.Id}" title="Remover">×</button>
       </td>
     </tr>
@@ -221,8 +225,9 @@ function sensorRowHtml(s) {
 // ============================================================
 // MODAL: Cadastro / Edição de Sensor
 // ============================================================
-async function openModal(id = null) {
-  state.editSensorId = id;
+async function openModal(id = null, opcoes = {}) {
+  const duplicar = !!opcoes.duplicar;
+  state.editSensorId = duplicar ? null : id; // duplicar sempre CRIA um sensor novo
   let sensor = {};
   if (id) {
     sensor = await Api.buscarSensor(id);
@@ -237,7 +242,9 @@ async function openModal(id = null) {
     state.modalFotoUrl = null;
   }
 
-  document.getElementById('modal-title').textContent = id ? 'Editar Sensor' : 'Cadastrar Sensor';
+  document.getElementById('modal-title').textContent = duplicar
+    ? 'Novo Sensor (baseado em existente)'
+    : (id ? 'Editar Sensor' : 'Cadastrar Sensor');
   document.getElementById('modal-content').innerHTML = modalFormHtml(sensor);
   document.getElementById('modal-overlay').classList.remove('hidden');
 
