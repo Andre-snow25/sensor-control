@@ -193,6 +193,16 @@ function selectHtml(id, placeholder, options) {
   return `<select id="${id}"><option value="">${placeholder}</option>${options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
 }
 
+// Divide um array em blocos de tamanho "tamanho" — usado pra limitar
+// quantas badges de especificação aparecem por linha na listagem
+function chunk(array, tamanho) {
+  const resultado = [];
+  for (let i = 0; i < array.length; i += tamanho) {
+    resultado.push(array.slice(i, i + tamanho));
+  }
+  return resultado;
+}
+
 function sensorRowHtml(s) {
   const secoes = CAMPOS_POR_TIPO[s.Tipo] || FILTROS_PADRAO;
   const valoresSecoes = secoes
@@ -207,7 +217,9 @@ function sensorRowHtml(s) {
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
       <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
-      <td style="white-space:normal;"><div style="display:flex; flex-wrap:wrap; gap:4px;">${specsAll.map(sp => `<span class="badge">${sp}</span>`).join('')}</div></td>
+      <td style="white-space:normal;">${chunk(specsAll, 4).map(linha =>
+        `<div style="display:flex; gap:4px; margin-bottom:4px;">${linha.map(sp => `<span class="badge">${sp}</span>`).join('')}</div>`
+      ).join('')}</td>
       <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
