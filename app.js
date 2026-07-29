@@ -198,10 +198,7 @@ function sensorRowHtml(s) {
   const valoresSecoes = secoes
     .map(sec => SECAO_PARA_CAMPO[sec] ? s[SECAO_PARA_CAMPO[sec]] : null)
     .filter(Boolean);
-  const specsAll = [s.Tipo, ...valoresSecoes].filter(Boolean);
-  const specsVisiveis = specsAll.slice(0, 3);
-  const recursosCount = (s.Recursos || []).length;
-  const extras = Math.max(0, specsAll.length - 3) + recursosCount;
+  const specsAll = [s.Tipo, ...valoresSecoes, ...(s.Recursos || [])].filter(Boolean);
   const estoqueBaixo = s.Estoque <= 3;
   return `
     <tr>
@@ -210,7 +207,7 @@ function sensorRowHtml(s) {
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
       <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
-      <td>${specsVisiveis.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
+      <td style="white-space:normal;"><div style="display:flex; flex-wrap:wrap; gap:4px;">${specsAll.map(sp => `<span class="badge">${sp}</span>`).join('')}</div></td>
       <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
