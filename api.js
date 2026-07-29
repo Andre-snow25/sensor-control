@@ -44,7 +44,7 @@ const Api = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
       logica: 'logica_saida', tensao: 'tensao', formato: 'formato',
       rosca: 'rosca', ip: 'ip', conexao: 'conexao', material: 'material',
-      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao'
+      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero'
     };
     Object.entries(mapaFiltros).forEach(([key, coluna]) => {
       if (filtros[key]) query = query.eq(coluna, filtros[key]);

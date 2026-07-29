@@ -65,6 +65,20 @@ async function renderLista() {
   state.sensores = await Api.listarSensores(state.filtros);
   const content = document.getElementById('page-content');
 
+  const tipoSelecionado = state.filtros.tipo || '';
+  const secoesAtivas = tipoSelecionado ? (CAMPOS_POR_TIPO[tipoSelecionado] || FILTROS_PADRAO) : [];
+  const secoesFiltraveis = secoesAtivas.filter(s => SECAO_PARA_FILTRO[s]); // recursos/cilindro não viram dropdown de filtro
+
+  // Busca todos os sensores do tipo selecionado (ignorando os demais filtros)
+  // só pra saber quais valores realmente existem e popular os dropdowns
+  let sensoresDoTipo = [];
+  if (tipoSelecionado) {
+    sensoresDoTipo = await Api.listarSensores({ tipo: tipoSelecionado });
+  }
+  function valoresExistentes(campo) {
+    return [...new Set(sensoresDoTipo.map(s => s[campo]).filter(Boolean))].sort();
+  }
+
   content.innerHTML = `
     <div class="page-header">
       <div>
@@ -85,16 +99,15 @@ async function renderLista() {
       </div>
       <div class="filters-grid">
         ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
-        ${selectHtml('f-distancia', 'Distância', [...new Set(Object.values(DISTANCIA_MAP).flat())])}
-        ${selectHtml('f-tipoSaida', 'Tipo de saída', TIPO_SAIDA_OPTS)}
-        ${selectHtml('f-logica', 'Lógica de saída', LOGICA_OPTS)}
-        ${selectHtml('f-tensao', 'Tensão', TENSAO_OPTS)}
-        ${selectHtml('f-formato', 'Formato', FORMATO_OPTS)}
-        ${selectHtml('f-ip', 'Grau de proteção', IP_OPTS)}
-        ${selectHtml('f-conexao', 'Conexão', CONEXAO_OPTS)}
-        ${selectHtml('f-material', 'Material', MATERIAL_OPTS)}
-        ${selectHtml('f-aplicacao', 'Aplicação', APLICACAO_OPTS)}
       </div>
+      ${!tipoSelecionado ? '<div style="font-size:12px; color:var(--text-light); margin-top:10px;">Selecione um tipo de sensor acima pra ver os filtros específicos dele.</div>' : `
+      <div class="filters-grid" style="margin-top:10px;">
+        ${secoesFiltraveis.map(secao => selectHtml(
+          `f-${SECAO_PARA_FILTRO[secao]}`,
+          SECAO_LABEL[secao],
+          valoresExistentes(SECAO_PARA_CAMPO[secao])
+        )).join('')}
+      </div>`}
     </div>
 
     <div class="card" style="padding:0;">
@@ -116,17 +129,26 @@ async function renderLista() {
   document.getElementById('btn-novo-sensor').addEventListener('click', () => openModal());
   document.getElementById('btn-limpar-filtros').addEventListener('click', () => { state.filtros = {}; render(); });
 
-  const filterMap = {
-    'f-busca': 'busca', 'f-caixa': 'caixa', 'f-tipo': 'tipo', 'f-distancia': 'distancia',
-    'f-tipoSaida': 'tipoSaida', 'f-logica': 'logica', 'f-tensao': 'tensao', 'f-formato': 'formato',
-    'f-ip': 'ip', 'f-conexao': 'conexao', 'f-material': 'material', 'f-aplicacao': 'aplicacao'
-  };
+  const filterMap = { 'f-busca': 'busca', 'f-caixa': 'caixa', 'f-tipo': 'tipo' };
+  secoesFiltraveis.forEach(secao => { filterMap[`f-${SECAO_PARA_FILTRO[secao]}`] = SECAO_PARA_FILTRO[secao]; });
+
   Object.entries(filterMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
+    if (!el) return;
     el.value = state.filtros[key] || '';
     el.addEventListener('change', () => {
-      state.filtros[key] = el.value;
-      if (!el.value) delete state.filtros[key];
+      // Trocar o tipo reseta os filtros específicos do tipo anterior
+      if (key === 'tipo') {
+        const busca = state.filtros.busca;
+        const caixa = state.filtros.caixa;
+        state.filtros = { busca, caixa, tipo: el.value };
+        if (!busca) delete state.filtros.busca;
+        if (!caixa) delete state.filtros.caixa;
+        if (!el.value) delete state.filtros.tipo;
+      } else {
+        state.filtros[key] = el.value;
+        if (!el.value) delete state.filtros[key];
+      }
       render();
     });
   });
@@ -151,8 +173,14 @@ function selectHtml(id, placeholder, options) {
 }
 
 function sensorRowHtml(s) {
-  const specs = [s.Tipo, s.Distancia, s.TipoSaida, s.Genero].filter(Boolean);
-  const extras = (s.Recursos || []).length;
+  const secoes = CAMPOS_POR_TIPO[s.Tipo] || FILTROS_PADRAO;
+  const valoresSecoes = secoes
+    .map(sec => SECAO_PARA_CAMPO[sec] ? s[SECAO_PARA_CAMPO[sec]] : null)
+    .filter(Boolean);
+  const specsAll = [s.Tipo, ...valoresSecoes].filter(Boolean);
+  const specsVisiveis = specsAll.slice(0, 3);
+  const recursosCount = (s.Recursos || []).length;
+  const extras = Math.max(0, specsAll.length - 3) + recursosCount;
   const estoqueBaixo = s.Estoque <= 3;
   return `
     <tr>
@@ -161,7 +189,7 @@ function sensorRowHtml(s) {
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
       <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
-      <td>${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
+      <td>${specsVisiveis.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
       <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>

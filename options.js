@@ -52,3 +52,28 @@ const FORMATO_OPTS_POR_TIPO = {
   'Conectores': ['Reto', '90°']
 };
 
+// Seções usadas como filtro/especificação pra tipos que NÃO têm entrada
+// em CAMPOS_POR_TIPO (ou seja, usam o formulário completo).
+const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'];
+
+// Liga cada "seção" ao nome do campo (Pascal, como vem da API) correspondente
+const SECAO_PARA_CAMPO = {
+  distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
+  formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
+  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero'
+};
+
+// Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
+const SECAO_PARA_FILTRO = {
+  distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
+  formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
+  material: 'material', aplicacao: 'aplicacao', genero: 'genero'
+};
+
+// Rótulos amigáveis pra cada seção, usados nos filtros
+const SECAO_LABEL = {
+  distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
+  formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
+  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea'
+};
+
