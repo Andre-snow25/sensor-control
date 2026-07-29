@@ -64,6 +64,12 @@ const TAMANHO_OPTS_POR_TIPO = {
   'Cabo de Sensor': ['2 Metros', '5 Metros']
 };
 
+// Sobrescreve as opções do campo "Conexão" pra tipos específicos.
+// Tipo que não estiver aqui usa CONEXAO_OPTS (a lista padrão).
+const CONEXAO_OPTS_POR_TIPO = {
+  'Cabo de Sensor': ['Conector M8', 'Conector M12', 'Jumper M8xM12']
+};
+
 // Seções usadas como filtro/especificação pra tipos que NÃO têm entrada
 // em CAMPOS_POR_TIPO (ou seja, usam o formulário completo).
 const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'];

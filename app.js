@@ -325,7 +325,7 @@ function modalFormHtml(s) {
 
     <div data-secao="ip,conexao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
       <div data-secao="ip"><span class="field-label">IP</span>${selectFull('m-ip', IP_OPTS, s.IP)}</div>
-      <div data-secao="conexao"><span class="field-label">Conexão</span>${selectFull('m-conexao', CONEXAO_OPTS, s.Conexao)}</div>
+      <div data-secao="conexao"><span class="field-label">Conexão</span>${selectFull('m-conexao', CONEXAO_OPTS_POR_TIPO[s.Tipo] || CONEXAO_OPTS, s.Conexao)}</div>
     </div>
 
     <div data-secao="material,aplicacao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
@@ -402,6 +402,12 @@ function wireModalEvents(sensor) {
     const valorAtualFormato = formatoSelect.value;
     formatoSelect.innerHTML = `<option value="">Selecione...</option>${opcoesFormato.map(f => `<option value="${f}" ${valorAtualFormato === f ? 'selected' : ''}>${f}</option>`).join('')}`;
     document.getElementById('rosca-field').classList.toggle('hidden', formatoSelect.value !== 'Cilíndrico roscado');
+
+    // Troca as opções do campo Conexão conforme o tipo (ex: Cabo de Sensor)
+    const conexaoSelect = document.getElementById('m-conexao');
+    const opcoesConexao = CONEXAO_OPTS_POR_TIPO[tipoSelect.value] || CONEXAO_OPTS;
+    const valorAtualConexao = conexaoSelect.value;
+    conexaoSelect.innerHTML = `<option value="">Selecione...</option>${opcoesConexao.map(c => `<option value="${c}" ${valorAtualConexao === c ? 'selected' : ''}>${c}</option>`).join('')}`;
   }
 
   function atualizarDistancia() {
