@@ -300,9 +300,9 @@ function modalFormHtml(s) {
     </div>
 
     <div data-secao="tipoSaida,logica,tensao" class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
-      <div><span class="field-label">Tipo Saída</span>${selectFull('m-tipoSaida', TIPO_SAIDA_OPTS, s.TipoSaida)}</div>
-      <div><span class="field-label">Lógica</span>${selectFull('m-logica', LOGICA_OPTS, s.LogicaSaida)}</div>
-      <div><span class="field-label">Tensão</span>${selectFull('m-tensao', TENSAO_OPTS, s.Tensao)}</div>
+      <div data-secao="tipoSaida"><span class="field-label">Tipo Saída</span>${selectFull('m-tipoSaida', TIPO_SAIDA_OPTS, s.TipoSaida)}</div>
+      <div data-secao="logica"><span class="field-label">Lógica</span>${selectFull('m-logica', LOGICA_OPTS, s.LogicaSaida)}</div>
+      <div data-secao="tensao"><span class="field-label">Tensão</span>${selectFull('m-tensao', TENSAO_OPTS, s.Tensao)}</div>
     </div>
 
     <div data-secao="formaComutacao">
@@ -324,13 +324,13 @@ function modalFormHtml(s) {
     </div>
 
     <div data-secao="ip,conexao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">IP</span>${selectFull('m-ip', IP_OPTS, s.IP)}</div>
-      <div><span class="field-label">Conexão</span>${selectFull('m-conexao', CONEXAO_OPTS, s.Conexao)}</div>
+      <div data-secao="ip"><span class="field-label">IP</span>${selectFull('m-ip', IP_OPTS, s.IP)}</div>
+      <div data-secao="conexao"><span class="field-label">Conexão</span>${selectFull('m-conexao', CONEXAO_OPTS, s.Conexao)}</div>
     </div>
 
     <div data-secao="material,aplicacao" class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Material</span>${selectFull('m-material', MATERIAL_OPTS, s.Material)}</div>
-      <div><span class="field-label">Aplicação</span>${selectFull('m-aplicacao', APLICACAO_OPTS, s.Aplicacao)}</div>
+      <div data-secao="material"><span class="field-label">Material</span>${selectFull('m-material', MATERIAL_OPTS, s.Material)}</div>
+      <div data-secao="aplicacao"><span class="field-label">Aplicação</span>${selectFull('m-aplicacao', APLICACAO_OPTS, s.Aplicacao)}</div>
     </div>
 
     <div data-secao="genero,pinos" class="field-group grid" style="grid-template-columns:1fr 1fr;">
