@@ -70,14 +70,23 @@ async function renderLista() {
   const secoesFiltraveis = secoesAtivas.filter(s => SECAO_PARA_FILTRO[s]); // recursos/cilindro não viram dropdown de filtro
 
   // Busca todos os sensores do tipo selecionado (ignorando os demais filtros)
-  // só pra saber quais valores realmente existem e popular os dropdowns
+  // e vai estreitando progressivamente: as opções do 2º filtro consideram
+  // o 1º já selecionado, as do 3º consideram o 1º e o 2º, e assim por diante.
   let sensoresDoTipo = [];
   if (tipoSelecionado) {
     sensoresDoTipo = await Api.listarSensores({ tipo: tipoSelecionado });
   }
-  function valoresExistentes(campo) {
-    return [...new Set(sensoresDoTipo.map(s => s[campo]).filter(Boolean))].sort();
-  }
+  const opcoesPorSecao = {};
+  let sensoresRestantes = sensoresDoTipo;
+  secoesFiltraveis.forEach(secao => {
+    const campo = SECAO_PARA_CAMPO[secao];
+    opcoesPorSecao[secao] = [...new Set(sensoresRestantes.map(s => s[campo]).filter(Boolean))].sort();
+    const chaveFiltro = SECAO_PARA_FILTRO[secao];
+    const valorSelecionado = state.filtros[chaveFiltro];
+    if (valorSelecionado) {
+      sensoresRestantes = sensoresRestantes.filter(s => s[campo] === valorSelecionado);
+    }
+  });
 
   content.innerHTML = `
     <div class="page-header">
@@ -105,7 +114,7 @@ async function renderLista() {
         ${secoesFiltraveis.map(secao => selectHtml(
           `f-${SECAO_PARA_FILTRO[secao]}`,
           SECAO_LABEL[secao],
-          valoresExistentes(SECAO_PARA_CAMPO[secao])
+          opcoesPorSecao[secao]
         )).join('')}
       </div>`}
     </div>
@@ -148,6 +157,15 @@ async function renderLista() {
       } else {
         state.filtros[key] = el.value;
         if (!el.value) delete state.filtros[key];
+
+        // Limpa os filtros seguintes na cascata (os valores deles podem
+        // não fazer mais sentido com a nova combinação escolhida)
+        const posicaoAtual = secoesFiltraveis.findIndex(secao => SECAO_PARA_FILTRO[secao] === key);
+        if (posicaoAtual !== -1) {
+          secoesFiltraveis.slice(posicaoAtual + 1).forEach(secao => {
+            delete state.filtros[SECAO_PARA_FILTRO[secao]];
+          });
+        }
       }
       render();
     });
