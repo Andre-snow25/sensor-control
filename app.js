@@ -11,7 +11,18 @@ const state = {
   editSensorId: null,
   modalRecursos: [],
   modalFormaComutacao: '',
+  tiposSensores: [],
 };
+
+// Carrega os tipos de sensores do banco (com fallback pra lista padrão
+// caso a tabela ainda não exista ou dê erro de conexão)
+async function carregarTipos() {
+  try {
+    state.tiposSensores = await Api.listarTipos();
+  } catch (err) {
+    state.tiposSensores = SENSOR_TYPES;
+  }
+}
 
 function showError(msg) {
   const el = document.getElementById('error-banner');
@@ -36,13 +47,14 @@ async function render() {
   const content = document.getElementById('page-content');
   content.innerHTML = '<div class="empty-state">Carregando...</div>';
   try {
+    if (state.tiposSensores.length === 0) await carregarTipos();
     if (state.page === 'lista') await renderLista();
     else if (state.page === 'movimentacao') await renderMovimentacao();
     else if (state.page === 'estrutura') await renderEstrutura();
     else if (state.page === 'dashboard') await renderDashboard();
   } catch (err) {
     showError(err.message);
-    content.innerHTML = `<div class="empty-state">Não foi possível carregar os dados. Verifique se o backend está rodando e conectado ao SQL Server.</div>`;
+    content.innerHTML = `<div class="empty-state">Não foi possível carregar os dados. Verifique a conexão com o Supabase.</div>`;
   }
 }
 
@@ -72,7 +84,7 @@ async function renderLista() {
         <input id="f-caixa" placeholder="Nº Caixa" style="max-width:160px;">
       </div>
       <div class="filters-grid">
-        ${selectHtml('f-tipo', 'Tipo de sensor', SENSOR_TYPES)}
+        ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
         ${selectHtml('f-distancia', 'Distância', [...new Set(Object.values(DISTANCIA_MAP).flat())])}
         ${selectHtml('f-tipoSaida', 'Tipo de saída', TIPO_SAIDA_OPTS)}
         ${selectHtml('f-logica', 'Lógica de saída', LOGICA_OPTS)}
@@ -193,15 +205,16 @@ function modalFormHtml(s) {
     </div>
 
     <div class="section-title-modal">Tipo</div>
-    <div class="field-group">
+    <div class="field-group" style="display:flex; gap:8px; align-items:flex-start;">
       <select id="m-tipo" style="width:100%;">
         <option value="">Selecione...</option>
-        ${SENSOR_TYPES.map(t => `<option value="${t}" ${s.Tipo === t ? 'selected' : ''}>${t}</option>`).join('')}
+        ${state.tiposSensores.map(t => `<option value="${t}" ${s.Tipo === t ? 'selected' : ''}>${t}</option>`).join('')}
       </select>
+      <button type="button" class="btn-secondary" id="btn-novo-tipo" style="white-space:nowrap;" title="Criar novo tipo de sensor">+ Novo tipo</button>
     </div>
 
     <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Distância</span><select id="m-distancia" style="width:100%;"></select></div>
+      <div><span class="field-label">Distância</span><input id="m-distancia" list="dist-list" value="${s.Distancia || ''}" placeholder="Selecione o tipo ou digite"><datalist id="dist-list"></datalist></div>
       <div><span class="field-label">Nº Caixa</span><input id="m-caixa" value="${s.Caixa || ''}"></div>
     </div>
 
@@ -257,15 +270,30 @@ function selectFull(id, options, selected) {
 
 function wireModalEvents(sensor) {
   const tipoSelect = document.getElementById('m-tipo');
-  const distanciaSelect = document.getElementById('m-distancia');
+  const distList = document.getElementById('dist-list');
 
   function atualizarDistancia() {
     const opts = DISTANCIA_MAP[tipoSelect.value] || [];
-    distanciaSelect.innerHTML = `<option value="">Selecione...</option>${opts.map(d => `<option value="${d}" ${sensor.Distancia === d ? 'selected' : ''}>${d}</option>`).join('')}`;
+    distList.innerHTML = opts.map(d => `<option value="${d}">`).join('');
     document.getElementById('cilindro-section').classList.toggle('hidden', tipoSelect.value !== 'Sensor para Cilindro Pneumático');
   }
   atualizarDistancia();
   tipoSelect.addEventListener('change', atualizarDistancia);
+
+  document.getElementById('btn-novo-tipo').addEventListener('click', async () => {
+    const nome = prompt('Nome do novo tipo de sensor:');
+    if (!nome || !nome.trim()) return;
+    try {
+      await Api.criarTipo(nome.trim());
+      await carregarTipos();
+      const valorAtual = tipoSelect.value;
+      tipoSelect.innerHTML = `<option value="">Selecione...</option>${state.tiposSensores.map(t => `<option value="${t}" ${t === nome.trim() ? 'selected' : ''}>${t}</option>`).join('')}`;
+      atualizarDistancia();
+    } catch (err) {
+      showError(err.message.toLowerCase().includes('duplicate') || err.message.toLowerCase().includes('unique')
+        ? 'Esse tipo já existe.' : err.message);
+    }
+  });
 
   document.getElementById('m-formato').addEventListener('change', (e) => {
     document.getElementById('rosca-field').classList.toggle('hidden', e.target.value !== 'Cilíndrico roscado');
