@@ -159,10 +159,10 @@ function sensorRowHtml(s) {
       <td>${s.Caixa || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodFabricante || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
-      <td>${s.FotoUrl ? `<div style="width:44px; height:44px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:cover; display:block;"></div>` : '<div class="foto-placeholder"></div>'}</td>
+      <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">${s.Nome}</td>
       <td>${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}${extras ? `<span class="badge">+${extras}</span>` : ''}</td>
-      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:20px; height:20px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:3px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
+      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
         <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
