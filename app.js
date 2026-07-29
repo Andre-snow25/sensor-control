@@ -340,7 +340,8 @@ function modalFormHtml(s) {
 
     <div data-secao="tamanho" class="field-group">
       <span class="field-label">Tamanho</span>
-      <input id="m-tamanho" value="${s.Tamanho || ''}" placeholder="Ex: 81mm (redondo) ou 20x20 (retangular)">
+      <input id="m-tamanho" list="tamanho-list" value="${s.Tamanho || ''}" placeholder="Ex: 81mm, 20x20, 2 Metros...">
+      <datalist id="tamanho-list"></datalist>
     </div>
 
     <div data-secao="recursos">
@@ -408,6 +409,9 @@ function wireModalEvents(sensor) {
     distList.innerHTML = opts.map(d => `<option value="${d}">`).join('');
     document.getElementById('cilindro-section').classList.toggle('hidden',
       tipoSelect.value !== 'Sensor para Cilindro Pneumático');
+
+    const opcoesTamanho = TAMANHO_OPTS_POR_TIPO[tipoSelect.value] || [];
+    document.getElementById('tamanho-list').innerHTML = opcoesTamanho.map(t => `<option value="${t}">`).join('');
   }
 
   atualizarDistancia();
