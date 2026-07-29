@@ -179,7 +179,7 @@ async function renderLista() {
   });
   content.querySelectorAll('[data-delete]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (confirm('Remover este sensor? Essa ação não pode ser desfeita.')) {
+      if (confirm('Você tem certeza que deseja remover este sensor? Essa ação não pode ser desfeita.')) {
         try {
           await Api.removerSensor(btn.dataset.delete);
           render();
@@ -333,8 +333,9 @@ function modalFormHtml(s) {
       <div><span class="field-label">Aplicação</span>${selectFull('m-aplicacao', APLICACAO_OPTS, s.Aplicacao)}</div>
     </div>
 
-    <div data-secao="genero" class="field-group grid" style="grid-template-columns:1fr 1fr;">
-      <div><span class="field-label">Macho / Fêmea</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
+    <div data-secao="genero,pinos" class="field-group grid" style="grid-template-columns:1fr 1fr;">
+      <div data-secao="genero"><span class="field-label">Macho / Fêmea</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
+      <div data-secao="pinos"><span class="field-label">Quantidade de pinos</span>${selectFull('m-pinos', PINOS_OPTS, s.Pinos)}</div>
     </div>
 
     <div data-secao="recursos">
@@ -501,6 +502,7 @@ async function salvarSensor() {
       CilindroMontagem: val('m-cilindroMontagem'),
       CilindroFios: val('m-cilindroFios'),
       Genero: val('m-genero'),
+      Pinos: val('m-pinos'),
       MarcaLogoUrl: marcaLogoUrl,
       FotoUrl: fotoUrl,
       Recursos: state.modalRecursos

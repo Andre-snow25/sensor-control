@@ -30,6 +30,7 @@ const CILINDRO_MONTAGEM_OPTS = ['Trilho T', 'Haste', 'Braçadeira'];
 const CILINDRO_FIOS_OPTS = ['2 fios', '3 fios', '4 fios'];
 
 const GENERO_OPTS = ['Macho', 'Fêmea'];
+const PINOS_OPTS = ['3 Pinos', '4 Pinos'];
 
 // ============================================================
 // Campos por tipo: define quais seções do formulário aparecem
@@ -40,10 +41,10 @@ const GENERO_OPTS = ['Macho', 'Fêmea'];
 //
 // Seções disponíveis: distancia, tipoSaida, logica, tensao,
 // formaComutacao, formato, ip, conexao, material, aplicacao,
-// cilindro, genero, recursos
+// cilindro, genero, pinos, recursos
 // ============================================================
 const CAMPOS_POR_TIPO = {
-  'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'recursos']
+  'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
@@ -60,20 +61,20 @@ const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato',
 const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
   formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
-  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero'
+  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos'
 };
 
 // Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
 const SECAO_PARA_FILTRO = {
   distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
   formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
-  material: 'material', aplicacao: 'aplicacao', genero: 'genero'
+  material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos'
 };
 
 // Rótulos amigáveis pra cada seção, usados nos filtros
 const SECAO_LABEL = {
   distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
   formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
-  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea'
+  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos'
 };
 
