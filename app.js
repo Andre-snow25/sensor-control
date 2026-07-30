@@ -89,34 +89,36 @@ async function renderLista() {
   });
 
   content.innerHTML = `
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Sensores</h1>
-        <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
+    <div id="lista-topo-fixo">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Sensores</h1>
+          <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
+        </div>
+        <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
       </div>
-      <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
-    </div>
 
-    <div class="card">
-      <div class="filters-head">
-        <div class="section-title">Filtros</div>
-        <div class="link-action" id="btn-limpar-filtros">Limpar filtros</div>
+      <div class="card">
+        <div class="filters-head">
+          <div class="section-title">Filtros</div>
+          <div class="link-action" id="btn-limpar-filtros">Limpar filtros</div>
+        </div>
+        <div class="filters-top">
+          <input id="f-busca" placeholder="Buscar por nome ou marca..." style="flex:1; max-width:320px;">
+          <input id="f-caixa" placeholder="Nº Caixa" style="max-width:160px;">
+        </div>
+        <div class="filters-grid">
+          ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
+        </div>
+        ${!tipoSelecionado ? '<div style="font-size:12px; color:var(--text-light); margin-top:10px;">Selecione um tipo de sensor acima pra ver os filtros específicos dele.</div>' : `
+        <div class="filters-grid" style="margin-top:10px;">
+          ${secoesFiltraveis.map(secao => selectHtml(
+            `f-${SECAO_PARA_FILTRO[secao]}`,
+            SECAO_LABEL[secao],
+            opcoesPorSecao[secao]
+          )).join('')}
+        </div>`}
       </div>
-      <div class="filters-top">
-        <input id="f-busca" placeholder="Buscar por nome ou marca..." style="flex:1; max-width:320px;">
-        <input id="f-caixa" placeholder="Nº Caixa" style="max-width:160px;">
-      </div>
-      <div class="filters-grid">
-        ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
-      </div>
-      ${!tipoSelecionado ? '<div style="font-size:12px; color:var(--text-light); margin-top:10px;">Selecione um tipo de sensor acima pra ver os filtros específicos dele.</div>' : `
-      <div class="filters-grid" style="margin-top:10px;">
-        ${secoesFiltraveis.map(secao => selectHtml(
-          `f-${SECAO_PARA_FILTRO[secao]}`,
-          SECAO_LABEL[secao],
-          opcoesPorSecao[secao]
-        )).join('')}
-      </div>`}
     </div>
 
     <div class="card" style="padding:0;">
@@ -187,6 +189,17 @@ async function renderLista() {
       }
     });
   });
+
+  // O cabeçalho da tabela precisa "grudar" logo abaixo do bloco de título+filtros,
+  // que tem altura variável (muda conforme os filtros aparecem). Mede a altura
+  // real do bloco fixo e usa isso como o "top" do cabeçalho da tabela.
+  const topoFixo = document.getElementById('lista-topo-fixo');
+  if (topoFixo) {
+    const alturaTopo = topoFixo.offsetHeight;
+    content.querySelectorAll('thead th').forEach(th => {
+      th.style.top = `${alturaTopo}px`;
+    });
+  }
 }
 
 function selectHtml(id, placeholder, options) {

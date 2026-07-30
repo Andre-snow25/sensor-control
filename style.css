@@ -53,6 +53,12 @@ body {
 
 .main { flex: 1; overflow-y: auto; padding: 28px 36px 48px; }
 
+#lista-topo-fixo {
+  position: sticky; top: 0; z-index: 6;
+  background: var(--body-bg);
+  padding-top: 1px; margin-top: -1px; /* evita "salto" de 1px ao virar sticky */
+}
+
 .page-header {
   display: flex; justify-content: space-between; align-items: flex-end;
   margin-bottom: 20px;
