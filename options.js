@@ -47,7 +47,8 @@ const CAMPOS_POR_TIPO = {
   'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos'],
   'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao'],
   'Botoeira': ['tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
-  'Cabo de Sensor': ['formato', 'ip', 'conexao', 'material', 'aplicacao', 'genero', 'pinos', 'tamanho']
+  'Cabo de Sensor': ['formato', 'ip', 'conexao', 'material', 'aplicacao', 'genero', 'pinos', 'tamanho'],
+  'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
@@ -55,7 +56,8 @@ const CAMPOS_POR_TIPO = {
 const FORMATO_OPTS_POR_TIPO = {
   'Conectores': ['Reto', '90°'],
   'Espelho Reflexivo': ['Retangular', 'Redondo'],
-  'Cabo de Sensor': ['Cabo Reto', 'Cabo 90°']
+  'Cabo de Sensor': ['Cabo Reto', 'Cabo 90°'],
+  'Chave de Segurança': ['Sensor', 'Lingueta (chave)']
 };
 
 // Sugestões pro campo "Tamanho" (continua sendo texto livre — essas são só
