@@ -220,7 +220,9 @@ function sensorRowHtml(s) {
       <td style="white-space:normal;">${chunk(specsAll, 4).map(linha =>
         `<div style="display:flex; gap:4px; margin-bottom:4px;">${linha.map(sp => `<span class="badge">${sp}</span>`).join('')}</div>`
       ).join('')}</td>
-      <td>${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; vertical-align:middle; margin-right:6px; border-radius:4px;" onerror="this.style.display='none'">` : ''}${s.Marca || '—'}</td>
+      <td>${s.MarcaLogoUrl
+        ? `<div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;"><img src="${s.MarcaLogoUrl}" style="width:60px; height:60px; object-fit:contain; border-radius:4px;" onerror="this.style.display='none'"><span style="font-size:10.5px; color:var(--text-light);">${s.Marca || ''}</span></div>`
+        : (s.Marca || '—')}</td>
       <td><span class="badge ${estoqueBaixo ? 'badge-warning' : ''}">${s.Estoque}</span></td>
       <td>
         <div class="acoes-linha">
