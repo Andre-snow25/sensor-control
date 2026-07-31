@@ -90,6 +90,7 @@ input, select {
   background: #fff;
 }
 .filters-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+#filtros-lateral input, #filtros-lateral select { width: 100%; box-sizing: border-box; }
 
 table { width: 100%; border-collapse: separate; border-spacing: 0; }
 thead th {
