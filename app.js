@@ -39,6 +39,9 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     item.classList.add('active');
     state.page = item.dataset.page;
+    if (state.page !== 'lista') {
+      document.getElementById('sidebar-filtros').innerHTML = '';
+    }
     render();
   });
 });
@@ -88,54 +91,52 @@ async function renderLista() {
     }
   });
 
+  // Filtros vão pro menu lateral principal (não pro conteúdo)
+  const sidebarFiltros = document.getElementById('sidebar-filtros');
+  sidebarFiltros.innerHTML = `
+    <div class="filters-head">
+      <div class="section-title" style="color:#cfd4d9;">Filtros</div>
+      <div class="link-action" id="btn-limpar-filtros" style="color:#8bb0ff;">Limpar</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+      <input id="f-busca" placeholder="Buscar por nome ou marca...">
+      <input id="f-caixa" placeholder="Nº Caixa">
+      ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
+    </div>
+    ${!tipoSelecionado ? '<div style="font-size:11.5px; color:#8b94a0; margin-top:10px;">Selecione um tipo de sensor acima pra ver os filtros específicos dele.</div>' : `
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+      ${secoesFiltraveis.map(secao => selectHtml(
+        `f-${SECAO_PARA_FILTRO[secao]}`,
+        SECAO_LABEL[secao],
+        opcoesPorSecao[secao]
+      )).join('')}
+    </div>`}
+  `;
+
   content.innerHTML = `
-    <div style="display:flex; gap:20px; align-items:flex-start;">
-      <div id="filtros-lateral" class="card" style="width:260px; flex-shrink:0; position:sticky; top:0; max-height:calc(100vh - 56px); overflow-y:auto;">
-        <div class="filters-head">
-          <div class="section-title">Filtros</div>
-          <div class="link-action" id="btn-limpar-filtros">Limpar</div>
+    <div id="lista-topo-fixo">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Sensores</h1>
+          <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-          <input id="f-busca" placeholder="Buscar por nome ou marca...">
-          <input id="f-caixa" placeholder="Nº Caixa">
-          ${selectHtml('f-tipo', 'Tipo de sensor', state.tiposSensores)}
-        </div>
-        ${!tipoSelecionado ? '<div style="font-size:12px; color:var(--text-light); margin-top:10px;">Selecione um tipo de sensor acima pra ver os filtros específicos dele.</div>' : `
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-          ${secoesFiltraveis.map(secao => selectHtml(
-            `f-${SECAO_PARA_FILTRO[secao]}`,
-            SECAO_LABEL[secao],
-            opcoesPorSecao[secao]
-          )).join('')}
-        </div>`}
+        <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
       </div>
+    </div>
 
-      <div style="flex:1; min-width:0;">
-        <div id="lista-topo-fixo">
-          <div class="page-header">
-            <div>
-              <h1 class="page-title">Sensores</h1>
-              <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
-            </div>
-            <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
-          </div>
-        </div>
-
-        <div class="card" style="padding:0;">
-          ${state.sensores.length === 0 ? '<div class="empty-state">Nenhum sensor encontrado.</div>' : `
-          <table>
-            <thead>
-              <tr>
-                <th>Caixa</th><th>Cód. Fab.</th><th>Cód. DV</th><th></th>
-                <th>Nome</th><th>Especificações</th><th>Marca</th><th>Estoque</th><th></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${state.sensores.map(sensorRowHtml).join('')}
-            </tbody>
-          </table>`}
-        </div>
-      </div>
+    <div class="card" style="padding:0;">
+      ${state.sensores.length === 0 ? '<div class="empty-state">Nenhum sensor encontrado.</div>' : `
+      <table>
+        <thead>
+          <tr>
+            <th>Caixa</th><th>Cód. Fab.</th><th>Cód. DV</th><th></th>
+            <th>Nome</th><th>Especificações</th><th>Marca</th><th>Estoque</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${state.sensores.map(sensorRowHtml).join('')}
+        </tbody>
+      </table>`}
     </div>
   `;
 
