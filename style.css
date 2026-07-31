@@ -19,7 +19,7 @@ body {
   color: var(--text-dark);
 }
 
-.app { display: flex; height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 
 .sidebar {
   width: 232px;
@@ -56,7 +56,6 @@ body {
 #lista-topo-fixo {
   position: sticky; top: 0; z-index: 6;
   background: var(--body-bg);
-  padding-top: 1px; margin-top: -1px; /* evita "salto" de 1px ao virar sticky */
 }
 
 .page-header {

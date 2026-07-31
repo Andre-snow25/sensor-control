@@ -191,14 +191,20 @@ async function renderLista() {
   });
 
   // O cabeçalho da tabela precisa "grudar" logo abaixo do bloco de título+filtros,
-  // que tem altura variável (muda conforme os filtros aparecem). Mede a altura
-  // real do bloco fixo e usa isso como o "top" do cabeçalho da tabela.
+  // que tem altura variável (muda conforme os filtros aparecem, fonte carrega, etc).
+  // Usa ResizeObserver pra manter isso sincronizado o tempo todo, não só uma vez.
   const topoFixo = document.getElementById('lista-topo-fixo');
   if (topoFixo) {
-    const alturaTopo = topoFixo.offsetHeight;
-    content.querySelectorAll('thead th').forEach(th => {
-      th.style.top = `${alturaTopo}px`;
-    });
+    const aplicarOffset = () => {
+      const alturaTopo = topoFixo.offsetHeight;
+      content.querySelectorAll('thead th').forEach(th => {
+        th.style.top = `${alturaTopo}px`;
+      });
+    };
+    aplicarOffset();
+    if (window.ResizeObserver) {
+      new ResizeObserver(aplicarOffset).observe(topoFixo);
+    }
   }
 }
 
