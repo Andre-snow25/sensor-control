@@ -114,17 +114,15 @@ async function renderLista() {
   `;
 
   content.innerHTML = `
-    <div id="lista-topo-fixo">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Sensores</h1>
-          <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
-        </div>
-        <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Sensores</h1>
+        <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
       </div>
+      <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
     </div>
 
-    <div class="card" style="padding:0;">
+    <div class="card" style="padding:0; max-height:calc(100vh - 190px); overflow:auto;">
       ${state.sensores.length === 0 ? '<div class="empty-state">Nenhum sensor encontrado.</div>' : `
       <table>
         <thead>
@@ -192,23 +190,6 @@ async function renderLista() {
       }
     });
   });
-
-  // O cabeçalho da tabela precisa "grudar" logo abaixo do bloco de título+filtros,
-  // que tem altura variável (muda conforme os filtros aparecem, fonte carrega, etc).
-  // Usa ResizeObserver pra manter isso sincronizado o tempo todo, não só uma vez.
-  const topoFixo = document.getElementById('lista-topo-fixo');
-  if (topoFixo) {
-    const aplicarOffset = () => {
-      const alturaTopo = topoFixo.offsetHeight;
-      content.querySelectorAll('thead th').forEach(th => {
-        th.style.top = `${alturaTopo}px`;
-      });
-    };
-    aplicarOffset();
-    if (window.ResizeObserver) {
-      new ResizeObserver(aplicarOffset).observe(topoFixo);
-    }
-  }
 }
 
 function selectHtml(id, placeholder, options) {
