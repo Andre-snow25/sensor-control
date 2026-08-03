@@ -10,13 +10,18 @@ const DISTANCIA_MAP = {
   'Fotoelétrico Retrorreflexivo': ['1 m', '3 m', '5 m'],
   'Fotoelétrico Barreira': ['5 m', '10 m', '15 m'],
   'Ultrassônico': ['20-150 mm', '30-500 mm', '100-1000 mm'],
-  'Magnético': ['1 mm', '2 mm', '5 mm']
+  'Magnético': ['1 mm', '2 mm', '5 mm'],
+  'Sensor Capacitivo': ['10mm']
 };
 
 const TIPO_SAIDA_OPTS = ['PNP', 'NPN', 'Relé', 'Analógico 4-20mA', 'Analógico 0-10V'];
 const LOGICA_OPTS = ['NA (Normalmente Aberto)', 'NF (Normalmente Fechado)', 'NA/NF'];
 const TENSAO_OPTS = ['10–30 VDC', '12–24 VDC', '24 VDC', '90–250 VAC'];
-const FORMA_COMUTACAO_OPTS = ['Estático', 'Antivalente'];
+const FORMA_COMUTACAO_OPTS = ['Dark ON', 'Light ON'];
+const FORMA_COMUTACAO_DESC = {
+  'Dark ON': 'Saída 24V ligada com peça',
+  'Light ON': 'Saída 24V ligada sem peça'
+};
 const FORMATO_OPTS = ['Cilíndrico roscado', 'Cilíndrico liso', 'Retangular', 'Miniatura', 'Garfo'];
 const ROSCA_OPTS = ['M8', 'M12', 'M18', 'M30'];
 const IP_OPTS = ['IP65', 'IP67', 'IP68', 'IP69K'];
@@ -50,7 +55,8 @@ const CAMPOS_POR_TIPO = {
   'Cabo de Sensor': ['formato', 'ip', 'conexao', 'material', 'aplicacao', 'genero', 'pinos', 'tamanho'],
   'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao'],
   'Chave Fim de Curso': ['logica', 'formato', 'ip', 'material', 'aplicacao'],
-  'Ponte Retificadora': ['aplicacao']
+  'Ponte Retificadora': ['aplicacao'],
+  'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.

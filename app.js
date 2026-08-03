@@ -315,6 +315,9 @@ function modalFormHtml(s) {
       <div class="toggle-group" id="m-formaComutacao">
         ${FORMA_COMUTACAO_OPTS.map(f => `<button type="button" class="toggle-btn ${state.modalFormaComutacao === f ? 'active' : ''}" data-value="${f}">${f}</button>`).join('')}
       </div>
+      <div style="font-size:11.5px; color:var(--text-light); margin-top:6px;">
+        ${FORMA_COMUTACAO_OPTS.map(f => `${f} → ${FORMA_COMUTACAO_DESC[f]}`).join(' &nbsp;·&nbsp; ')}
+      </div>
     </div>
 
     <div data-secao="formato">
