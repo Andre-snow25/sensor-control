@@ -43,6 +43,17 @@
   </div>
 </div>
 
+<!-- Modal de consulta do vínculo (Emissor / Receptor) -->
+<div id="consulta-overlay" class="modal-overlay hidden">
+  <div class="modal" style="width:760px;">
+    <div class="modal-header">
+      Vínculo — Emissor / Receptor
+      <button id="btn-fechar-consulta" style="float:right; background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-light);">×</button>
+    </div>
+    <div class="modal-content" id="consulta-content"></div>
+  </div>
+</div>
+
 <!-- SDK do Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabaseClient.js"></script>

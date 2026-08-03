@@ -44,7 +44,7 @@ async function checarErro(promise, mensagemPadrao) {
 const Api = {
   // ---------- Sensores ----------
   async listarSensores(filtros = {}) {
-    let query = supabaseClient.from('sensores').select('*').order('caixa', { ascending: true, nullsFirst: false });
+    let query = supabaseClient.from('sensores').select('*, par_sensor:par_sensor_id(caixa)').order('caixa', { ascending: true, nullsFirst: false });
 
     const mapaFiltros = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
@@ -60,7 +60,7 @@ const Api = {
     }
 
     const linhas = await checarErro(query, 'Erro ao buscar sensores');
-    const sensores = linhas.map(paraPascal);
+    const sensores = linhas.map(l => ({ ...paraPascal(l), ParCaixa: l.par_sensor ? l.par_sensor.caixa : null }));
 
     // Busca recursos de todos os sensores retornados
     if (sensores.length > 0) {

@@ -180,8 +180,8 @@ async function renderLista() {
   content.querySelectorAll('[data-duplicar]').forEach(btn => {
     btn.addEventListener('click', () => openModal(btn.dataset.duplicar, { duplicar: true }));
   });
-  content.querySelectorAll('[data-ver-par]').forEach(btn => {
-    btn.addEventListener('click', () => openModal(btn.dataset.verPar));
+  content.querySelectorAll('[data-consultar-par]').forEach(btn => {
+    btn.addEventListener('click', () => abrirConsultaPar(btn.dataset.consultarPar));
   });
   content.querySelectorAll('[data-delete]').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -222,7 +222,14 @@ function sensorRowHtml(s) {
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodFabricante || '—'}</td>
       <td style="font-family:'IBM Plex Mono',monospace;">${s.CodDV || '—'}</td>
       <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
-      <td style="font-weight:600;">${s.Nome}</td>
+      <td style="font-weight:600;">
+        ${s.Nome}
+        ${s.Tipo === 'Sensor de Barreira' ? (
+          s.ParSensorId
+            ? `<div style="font-weight:400; font-size:11px; color:var(--text-light); margin-top:2px;">Vínculo: cx ${s.ParCaixa || '?'} <button class="link-action" data-consultar-par="${s.Id}" style="font-size:11px; border:none; background:none; cursor:pointer;">Ver</button></div>`
+            : `<div style="font-weight:400; font-size:11px; color:var(--text-light); margin-top:2px;">Sem vínculo</div>`
+        ) : ''}
+      </td>
       <td style="white-space:normal;">${chunk(specsAll, 4).map(linha =>
         `<div style="display:flex; gap:4px; margin-bottom:4px;">${linha.map(sp => `<span class="badge">${sp}</span>`).join('')}</div>`
       ).join('')}</td>
@@ -234,7 +241,6 @@ function sensorRowHtml(s) {
         <div class="acoes-linha">
           <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
           <button class="btn-icon" data-duplicar="${s.Id}" title="Criar sensor similar" style="background:var(--text-light);">⧉</button>
-          ${s.ParSensorId ? `<button class="btn-icon" data-ver-par="${s.ParSensorId}" title="Ver sensor par vinculado" style="background:#8b5cf6;">🔗</button>` : (s.Tipo === 'Sensor de Barreira' ? `<button class="btn-icon" title="Sem par vinculado ainda" style="background:#d1d5db; cursor:default;" disabled>🔗</button>` : '')}
           <button class="btn-icon danger" data-delete="${s.Id}" title="Remover">×</button>
         </div>
       </td>
@@ -520,6 +526,67 @@ function wireModalEvents(sensor) {
 function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden');
 }
+
+// ============================================================
+// MODAL DE CONSULTA: Vínculo Emissor / Receptor (só leitura)
+// ============================================================
+async function abrirConsultaPar(sensorId) {
+  try {
+    const sensor = await Api.buscarSensor(sensorId);
+    if (!sensor.ParSensorId) {
+      showError('Esse sensor ainda não tem um par vinculado.');
+      return;
+    }
+    const par = await Api.buscarSensor(sensor.ParSensorId);
+
+    // Decide quem fica à esquerda (Emissor) e à direita (Receptor)
+    let esquerda = sensor, direita = par;
+    if (sensor.Papel === 'Receptor' && par.Papel === 'Emissor') {
+      esquerda = par; direita = sensor;
+    }
+
+    document.getElementById('consulta-content').innerHTML = `
+      <div style="display:flex; gap:20px;">
+        ${consultaColunaHtml(esquerda, esquerda.Papel || 'Lado A')}
+        ${consultaColunaHtml(direita, direita.Papel || 'Lado B')}
+      </div>
+    `;
+    document.getElementById('consulta-overlay').classList.remove('hidden');
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+function consultaColunaHtml(s, papelLabel) {
+  const specs = [s.Tipo, s.Distancia, s.TipoSaida, s.Formato, s.IP, s.Conexao, s.Material, s.Aplicacao].filter(Boolean);
+  return `
+    <div style="flex:1; border:1px solid var(--border); border-radius:8px; padding:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--accent); margin-bottom:10px;">${papelLabel}</div>
+      <div style="display:flex; gap:12px; margin-bottom:12px;">
+        <div style="width:70px; height:70px; border-radius:6px; overflow:hidden; background:#f0f0f0; flex-shrink:0;">
+          ${s.FotoUrl ? `<img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;">` : ''}
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:14px;">${s.Nome}</div>
+          <div style="font-size:12px; color:var(--text-light);">Caixa ${s.Caixa || '—'}</div>
+          <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+            ${s.MarcaLogoUrl ? `<img src="${s.MarcaLogoUrl}" style="width:18px; height:18px; object-fit:contain;">` : ''}
+            <span style="font-size:12px; color:var(--text-light);">${s.Marca || '—'}</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-light); margin-bottom:2px;">Cód. Fabricante: <b style="color:var(--text-dark);">${s.CodFabricante || '—'}</b></div>
+      <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">Cód. DV: <b style="color:var(--text-dark);">${s.CodDV || '—'}</b></div>
+      <div style="display:flex; flex-wrap:wrap; gap:4px;">
+        ${specs.map(sp => `<span class="badge">${sp}</span>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('btn-fechar-consulta').addEventListener('click', () => {
+  document.getElementById('consulta-overlay').classList.add('hidden');
+});
 
 async function salvarSensor() {
   const val = (id) => document.getElementById(id)?.value || null;
