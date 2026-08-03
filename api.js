@@ -9,7 +9,8 @@ const CAMPO_MAP = {
   FormaComutacao: 'forma_comutacao', Formato: 'formato', Rosca: 'rosca',
   IP: 'ip', Conexao: 'conexao', Material: 'material', Aplicacao: 'aplicacao',
   CilindroTipo: 'cilindro_tipo', CilindroMontagem: 'cilindro_montagem',
-  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero', MarcaLogoUrl: 'marca_logo_url', Pinos: 'pinos', Tamanho: 'tamanho'
+  CilindroFios: 'cilindro_fios', FotoUrl: 'foto_url', Genero: 'genero', MarcaLogoUrl: 'marca_logo_url', Pinos: 'pinos', Tamanho: 'tamanho',
+  Papel: 'papel', ParSensorId: 'par_sensor_id'
 };
 
 function paraColuna(dadosPascal) {
@@ -49,7 +50,7 @@ const Api = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
       logica: 'logica_saida', tensao: 'tensao', formato: 'formato',
       rosca: 'rosca', ip: 'ip', conexao: 'conexao', material: 'material',
-      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho'
+      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho', papel: 'papel'
     };
     Object.entries(mapaFiltros).forEach(([key, coluna]) => {
       if (filtros[key]) query = query.eq(coluna, filtros[key]);
@@ -129,6 +130,42 @@ const Api = {
   async removerSensor(id) {
     await checarErro(supabaseClient.from('sensores').delete().eq('id', id), 'Erro ao remover sensor');
     return { mensagem: 'Sensor removido com sucesso' };
+  },
+
+  // ---------- Vínculo de par (Sensor de Barreira: emissor <-> receptor) ----------
+  // Sempre mantém o vínculo nos dois lados. Se o sensor ou o novo par já
+  // tinham outro vínculo, desfaz o antigo antes de criar o novo.
+  async vincularPar(sensorId, novoParId) {
+    const atual = await checarErro(
+      supabaseClient.from('sensores').select('par_sensor_id').eq('id', sensorId).single(),
+      'Erro ao buscar sensor'
+    );
+    const parAntigoId = atual.par_sensor_id;
+
+    if (parAntigoId && parAntigoId !== novoParId) {
+      await checarErro(
+        supabaseClient.from('sensores').update({ par_sensor_id: null }).eq('id', parAntigoId),
+        'Erro ao desfazer vínculo antigo'
+      );
+    }
+
+    if (novoParId) {
+      // Se o sensor escolhido como novo par já tinha outro vínculo, desfaz também
+      const novoPar = await checarErro(
+        supabaseClient.from('sensores').select('par_sensor_id').eq('id', novoParId).single(),
+        'Erro ao buscar sensor par'
+      );
+      if (novoPar.par_sensor_id && novoPar.par_sensor_id !== sensorId) {
+        await checarErro(
+          supabaseClient.from('sensores').update({ par_sensor_id: null }).eq('id', novoPar.par_sensor_id),
+          'Erro ao desfazer vínculo antigo do par'
+        );
+      }
+      await checarErro(supabaseClient.from('sensores').update({ par_sensor_id: sensorId }).eq('id', novoParId), 'Erro ao vincular par');
+    }
+
+    await checarErro(supabaseClient.from('sensores').update({ par_sensor_id: novoParId || null }).eq('id', sensorId), 'Erro ao vincular par');
+    return { mensagem: 'Vínculo atualizado' };
   },
 
   // ---------- Upload de imagens (Supabase Storage) ----------

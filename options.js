@@ -36,6 +36,7 @@ const CILINDRO_FIOS_OPTS = ['2 fios', '3 fios', '4 fios'];
 
 const GENERO_OPTS = ['Macho', 'Fêmea'];
 const PINOS_OPTS = ['3 Pinos', '4 Pinos', '8 Pinos', '12 Pinos'];
+const PAPEL_BARREIRA_OPTS = ['Emissor', 'Receptor'];
 
 // ============================================================
 // Campos por tipo: define quais seções do formulário aparecem
@@ -56,7 +57,8 @@ const CAMPOS_POR_TIPO = {
   'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao'],
   'Chave Fim de Curso': ['logica', 'formato', 'ip', 'material', 'aplicacao'],
   'Ponte Retificadora': ['aplicacao'],
-  'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao']
+  'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
+  'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
@@ -90,20 +92,25 @@ const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato',
 const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
   formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
-  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos', tamanho: 'Tamanho'
+  material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos', tamanho: 'Tamanho',
+  papel: 'Papel'
 };
 
 // Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
 const SECAO_PARA_FILTRO = {
   distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
   formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
-  material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho'
+  material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho',
+  papel: 'papel'
 };
 
 // Rótulos amigáveis pra cada seção, usados nos filtros
 const SECAO_LABEL = {
   distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
   formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
-  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos', tamanho: 'Tamanho'
+  material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos', tamanho: 'Tamanho',
+  papel: 'Emissor / Receptor'
 };
+// Observação: a seção "par" (sensor vinculado) é tratada à parte no app.js —
+// não entra nesses mapeamentos porque não é um dropdown comum, é uma busca/vínculo.
 

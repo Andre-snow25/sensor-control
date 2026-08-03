@@ -180,6 +180,9 @@ async function renderLista() {
   content.querySelectorAll('[data-duplicar]').forEach(btn => {
     btn.addEventListener('click', () => openModal(btn.dataset.duplicar, { duplicar: true }));
   });
+  content.querySelectorAll('[data-ver-par]').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.verPar));
+  });
   content.querySelectorAll('[data-delete]').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (confirm('Você tem certeza que deseja remover este sensor? Essa ação não pode ser desfeita.')) {
@@ -231,6 +234,7 @@ function sensorRowHtml(s) {
         <div class="acoes-linha">
           <button class="btn-icon" data-edit="${s.Id}" title="Editar">✎</button>
           <button class="btn-icon" data-duplicar="${s.Id}" title="Criar sensor similar" style="background:var(--text-light);">⧉</button>
+          ${s.ParSensorId ? `<button class="btn-icon" data-ver-par="${s.ParSensorId}" title="Ver sensor par vinculado" style="background:#8b5cf6;">🔗</button>` : (s.Tipo === 'Sensor de Barreira' ? `<button class="btn-icon" title="Sem par vinculado ainda" style="background:#d1d5db; cursor:default;" disabled>🔗</button>` : '')}
           <button class="btn-icon danger" data-delete="${s.Id}" title="Remover">×</button>
         </div>
       </td>
@@ -352,6 +356,14 @@ function modalFormHtml(s) {
       <datalist id="tamanho-list"></datalist>
     </div>
 
+    <div data-secao="papel,par" class="field-group grid" style="grid-template-columns:1fr 1.5fr;">
+      <div data-secao="papel"><span class="field-label">Emissor / Receptor</span>${selectFull('m-papel', PAPEL_BARREIRA_OPTS, s.Papel)}</div>
+      <div data-secao="par">
+        <span class="field-label">Par vinculado (${s.Papel === 'Emissor' ? 'receptor' : s.Papel === 'Receptor' ? 'emissor' : 'outro sensor'} correspondente)</span>
+        <select id="m-par" style="width:100%;"><option value="">Carregando...</option></select>
+      </div>
+    </div>
+
     <div data-secao="recursos">
       <div class="section-title-modal">Recursos</div>
       <div class="toggle-group" id="m-recursos">
@@ -428,11 +440,35 @@ function wireModalEvents(sensor) {
     document.getElementById('tamanho-list').innerHTML = opcoesTamanho.map(t => `<option value="${t}">`).join('');
   }
 
+  // Carrega a lista de sensores do mesmo tipo pra escolher como "par"
+  // (usado por tipos como Sensor de Barreira, emissor <-> receptor)
+  async function atualizarParSelect() {
+    const parSelect = document.getElementById('m-par');
+    if (!parSelect) return;
+    const camposTipo = CAMPOS_POR_TIPO[tipoSelect.value] || [];
+    if (!camposTipo.includes('par')) return;
+
+    parSelect.innerHTML = '<option value="">Carregando...</option>';
+    try {
+      const candidatos = await Api.listarSensores({ tipo: tipoSelect.value });
+      const idAtual = state.editSensorId;
+      const opcoes = candidatos.filter(c => c.Id !== idAtual);
+      const parSelecionadoAtual = idAtual ? sensor.ParSensorId : null;
+      parSelect.innerHTML = '<option value="">Nenhum</option>' + opcoes.map(c =>
+        `<option value="${c.Id}" ${parSelecionadoAtual === c.Id ? 'selected' : ''}>${c.Nome}${c.Papel ? ' — ' + c.Papel : ''}</option>`
+      ).join('');
+    } catch (err) {
+      parSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+    }
+  }
+
   atualizarDistancia();
   aplicarCamposPorTipo();
+  atualizarParSelect();
   tipoSelect.addEventListener('change', () => {
     atualizarDistancia();
     aplicarCamposPorTipo();
+    atualizarParSelect();
   });
 
   document.getElementById('btn-novo-tipo').addEventListener('click', async () => {
@@ -445,6 +481,7 @@ function wireModalEvents(sensor) {
       tipoSelect.innerHTML = `<option value="">Selecione...</option>${state.tiposSensores.map(t => `<option value="${t}" ${t === nome.trim() ? 'selected' : ''}>${t}</option>`).join('')}`;
       atualizarDistancia();
       aplicarCamposPorTipo();
+      atualizarParSelect();
     } catch (err) {
       showError(err.message.toLowerCase().includes('duplicate') || err.message.toLowerCase().includes('unique')
         ? 'Esse tipo já existe.' : err.message);
@@ -527,6 +564,7 @@ async function salvarSensor() {
       Genero: val('m-genero'),
       Pinos: val('m-pinos'),
       Tamanho: val('m-tamanho'),
+      Papel: val('m-papel'),
       MarcaLogoUrl: marcaLogoUrl,
       FotoUrl: fotoUrl,
       Recursos: state.modalRecursos
@@ -537,11 +575,21 @@ async function salvarSensor() {
       return;
     }
 
-    if (state.editSensorId) {
-      await Api.atualizarSensor(state.editSensorId, dados);
+    let sensorId = state.editSensorId;
+    if (sensorId) {
+      await Api.atualizarSensor(sensorId, dados);
     } else {
-      await Api.criarSensor(dados);
+      const resultado = await Api.criarSensor(dados);
+      sensorId = resultado.id;
     }
+
+    // Se o campo de par estiver visível pra esse tipo, aplica o vínculo
+    // (nos dois sentidos: sensor <-> par)
+    const campoPar = document.getElementById('m-par');
+    if (campoPar && !campoPar.closest('[data-secao="par"]').classList.contains('hidden')) {
+      await Api.vincularPar(sensorId, campoPar.value || null);
+    }
+
     closeModal();
     render();
   } catch (err) {
