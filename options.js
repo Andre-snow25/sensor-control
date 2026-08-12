@@ -17,11 +17,13 @@ const DISTANCIA_MAP = {
 const TIPO_SAIDA_OPTS = ['PNP', 'NPN', 'Relé', 'Analógico 4-20mA', 'Analógico 0-10V'];
 const LOGICA_OPTS = ['NA (Normalmente Aberto)', 'NF (Normalmente Fechado)', 'NA/NF'];
 const TENSAO_OPTS = ['10–30 VDC', '12–24 VDC', '24 VDC', '90–250 VAC'];
+
 const FORMA_COMUTACAO_OPTS = ['Dark ON', 'Light ON'];
 const FORMA_COMUTACAO_DESC = {
   'Dark ON': 'Saída 24V ligada com peça',
   'Light ON': 'Saída 24V ligada sem peça'
 };
+
 const FORMATO_OPTS = ['Cilíndrico roscado', 'Cilíndrico liso', 'Retangular', 'Miniatura', 'Garfo'];
 const ROSCA_OPTS = ['M8', 'M12', 'M18', 'M30'];
 const IP_OPTS = ['IP65', 'IP67', 'IP68', 'IP69K'];
@@ -36,7 +38,7 @@ const CILINDRO_FIOS_OPTS = ['2 fios', '3 fios', '4 fios'];
 
 const GENERO_OPTS = ['Macho', 'Fêmea'];
 const PINOS_OPTS = ['3 Pinos', '4 Pinos', '8 Pinos', '12 Pinos'];
-const PAPEL_BARREIRA_OPTS = ['Emissor', 'Receptor'];
+const PAPEL_BARREIRA_OPTS = ['Emissor', 'Receptor', 'Emissor/Receptor'];
 
 // ============================================================
 // Campos por tipo: define quais seções do formulário aparecem
@@ -47,7 +49,7 @@ const PAPEL_BARREIRA_OPTS = ['Emissor', 'Receptor'];
 //
 // Seções disponíveis: distancia, tipoSaida, logica, tensao,
 // formaComutacao, formato, ip, conexao, material, aplicacao,
-// cilindro, genero, pinos, recursos
+// cilindro, genero, pinos, tamanho, papel, par, recursos
 // ============================================================
 const CAMPOS_POR_TIPO = {
   'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos'],
@@ -84,10 +86,6 @@ const CONEXAO_OPTS_POR_TIPO = {
   'Cabo de Sensor': ['Conector M8', 'Conector M12', 'Jumper M8xM12']
 };
 
-// Seções usadas como filtro/especificação pra tipos que NÃO têm entrada
-// em CAMPOS_POR_TIPO (ou seja, usam o formulário completo).
-const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'];
-
 // Liga cada "seção" ao nome do campo (Pascal, como vem da API) correspondente
 const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
@@ -114,3 +112,6 @@ const SECAO_LABEL = {
 // Observação: a seção "par" (sensor vinculado) é tratada à parte no app.js —
 // não entra nesses mapeamentos porque não é um dropdown comum, é uma busca/vínculo.
 
+// Lista de campos usada como padrão pra tipos que NÃO têm entrada em
+// CAMPOS_POR_TIPO (mostra o formulário "completo" clássico)
+const FILTROS_PADRAO = ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'];
