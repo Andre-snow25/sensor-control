@@ -1,3 +1,4 @@
+// Configurações de tipos, campos e opções do sistema de sensores
 const SENSOR_TYPES = [
   'Indutivo', 'Capacitivo', 'Fotoelétrico Difuso', 'Fotoelétrico Retrorreflexivo',
   'Fotoelétrico Barreira', 'Ultrassônico', 'Magnético', 'Sensor para Cilindro Pneumático', 'Encoder'
