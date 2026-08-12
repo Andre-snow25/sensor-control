@@ -1,4 +1,4 @@
-// Configurações de tipos, campos e opções do sistema de sensores
+// Configurações de tipos, campos e opções do sistema 
 // (SensorControl)
 const SENSOR_TYPES = [
   'Indutivo', 'Capacitivo', 'Fotoelétrico Difuso', 'Fotoelétrico Retrorreflexivo',
