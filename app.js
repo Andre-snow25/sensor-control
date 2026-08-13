@@ -461,7 +461,7 @@ function wireModalEvents(sensor) {
       const opcoes = candidatos.filter(c => c.Id !== idAtual);
       const parSelecionadoAtual = idAtual ? sensor.ParSensorId : null;
       parSelect.innerHTML = '<option value="">Nenhum</option>' + opcoes.map(c =>
-        `<option value="${c.Id}" ${parSelecionadoAtual === c.Id ? 'selected' : ''}>${c.Nome}${c.Papel ? ' — ' + c.Papel : ''}</option>`
+      `<option value="${c.Id}" ${parSelecionadoAtual === c.Id ? 'selected' : ''}>${c.Caixa ? 'Cx ' + c.Caixa + ' — ' : ''}${c.Nome}${c.Papel ? ' — ' + c.Papel : ''}</option>`
       ).join('');
     } catch (err) {
       parSelect.innerHTML = '<option value="">Erro ao carregar</option>';
