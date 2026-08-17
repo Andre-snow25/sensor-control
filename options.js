@@ -62,7 +62,8 @@ const CAMPOS_POR_TIPO = {
   'Chave Fim de Curso': ['logica', 'formato', 'ip', 'material', 'aplicacao'],
   'Ponte Retificadora': ['aplicacao'],
   'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
-  'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par']
+  'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par'],
+  'Sensor de Cilindro': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
@@ -85,7 +86,8 @@ const TAMANHO_OPTS_POR_TIPO = {
 // Sobrescreve as opções do campo "Conexão" pra tipos específicos.
 // Tipo que não estiver aqui usa CONEXAO_OPTS (a lista padrão).
 const CONEXAO_OPTS_POR_TIPO = {
-  'Cabo de Sensor': ['Conector M8', 'Conector M12', 'Jumper M8xM12']
+  'Cabo de Sensor': ['Conector M8', 'Conector M12', 'Jumper M8xM12'],
+  'Sensor de Cilindro': ['2 fios', '3 fios']
 };
 
 // Liga cada "seção" ao nome do campo (Pascal, como vem da API) correspondente
