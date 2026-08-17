@@ -87,7 +87,7 @@ const TAMANHO_OPTS_POR_TIPO = {
 // Tipo que não estiver aqui usa CONEXAO_OPTS (a lista padrão).
 const CONEXAO_OPTS_POR_TIPO = {
   'Cabo de Sensor': ['Conector M8', 'Conector M12', 'Jumper M8xM12'],
-  'Sensor de Cilindro': ['2 fios', '3 fios']
+  'Sensor de Cilindro': ['2 fios', '3 fios', '4 fios']
 };
 
 // Liga cada "seção" ao nome do campo (Pascal, como vem da API) correspondente
