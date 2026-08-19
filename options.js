@@ -73,7 +73,7 @@ const FORMATO_OPTS_POR_TIPO = {
   'Conectores': ['Reto', '90°'],
   'Espelho Reflexivo': ['Retangular', 'Redondo'],
   'Cabo de Sensor': ['Cabo Reto', 'Cabo 90°'],
-  'Chave de Segurança': ['Sensor magnético', 'Lingueta (chave)'],
+  'Chave de Segurança': ['Sensor magnético', 'Lingueta (chave)', 'Intertravamento Rotativo'],
   'Chave Fim de Curso': ['Roldana Fixa', 'Roldana Ajustável']
 };
 
