@@ -479,6 +479,12 @@ function wireModalEvents(sensor) {
     atualizarParSelect();
   });
 
+  // Mostra/esconde o campo Rosca sempre que o Formato mudar diretamente
+  // (não só quando o Tipo muda)
+  document.getElementById('m-formato').addEventListener('change', (e) => {
+    document.getElementById('rosca-field').classList.toggle('hidden', e.target.value !== 'Cilíndrico roscado');
+  });
+
   document.getElementById('btn-novo-tipo').addEventListener('click', async () => {
     const nome = prompt('Nome do novo tipo de sensor:');
     if (!nome || !nome.trim()) return;
