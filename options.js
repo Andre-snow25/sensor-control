@@ -64,7 +64,8 @@ const CAMPOS_POR_TIPO = {
   'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
   'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par'],
   'Sensor de Cilindro': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao'],
-  'Sensor de Pressão': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao']
+  'Sensor de Pressão': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao'],
+  'Sensor Fibra Optica': ['tipoSaida', 'logica', 'tensao', 'ip', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
