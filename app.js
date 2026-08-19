@@ -11,8 +11,17 @@ const state = {
   editSensorId: null,
   modalRecursos: [],
   modalFormaComutacao: '',
+  modalMarcaLogoUrl: null,
+  modalFotoUrl: null,
   tiposSensores: [],
 };
+
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 6000);
+}
 
 // Carrega os tipos de sensores do banco (com fallback pra lista padrão
 // caso a tabela ainda não exista ou dê erro de conexão)
@@ -22,13 +31,6 @@ async function carregarTipos() {
   } catch (err) {
     state.tiposSensores = SENSOR_TYPES;
   }
-}
-
-function showError(msg) {
-  const el = document.getElementById('error-banner');
-  el.textContent = msg;
-  el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 6000);
 }
 
 // ============================================================
@@ -65,12 +67,9 @@ async function render() {
 // PÁGINA: Lista de Sensores
 // ============================================================
 async function renderLista() {
-  state.sensores = await Api.listarSensores(state.filtros);
-  const content = document.getElementById('page-content');
-
-  const tipoSelecionado = state.filtros.tipo || '';
+  const tipoSelecionado = state.filtros.tipo;
   const secoesAtivas = tipoSelecionado ? (CAMPOS_POR_TIPO[tipoSelecionado] || FILTROS_PADRAO) : [];
-  const secoesFiltraveis = secoesAtivas.filter(s => SECAO_PARA_FILTRO[s]); // recursos/cilindro não viram dropdown de filtro
+  const secoesFiltraveis = secoesAtivas.filter(s => SECAO_PARA_FILTRO[s]); // recursos/cilindro/par não viram dropdown de filtro
 
   // Busca todos os sensores do tipo selecionado (ignorando os demais filtros)
   // e vai estreitando progressivamente: as opções do 2º filtro consideram
@@ -90,6 +89,9 @@ async function renderLista() {
       sensoresRestantes = sensoresRestantes.filter(s => s[campo] === valorSelecionado);
     }
   });
+
+  state.sensores = await Api.listarSensores(state.filtros);
+  const content = document.getElementById('page-content');
 
   // Filtros vão pro menu lateral principal (não pro conteúdo)
   const sidebarFiltros = document.getElementById('sidebar-filtros');
@@ -224,7 +226,7 @@ function sensorRowHtml(s) {
       <td>${s.FotoUrl ? `<div style="width:90px; height:56px; border-radius:6px; overflow:hidden; background:#f0f0f0;"><img src="${s.FotoUrl}" style="width:100%; height:100%; object-fit:contain;"></div>` : '<div class="foto-placeholder"></div>'}</td>
       <td style="font-weight:600;">
         ${s.Nome}
-        ${s.Tipo === 'Sensor de Barreira' ? (
+        ${(CAMPOS_POR_TIPO[s.Tipo] || []).includes('par') ? (
           s.ParSensorId
             ? `<div style="font-weight:400; font-size:11px; color:var(--text-light); margin-top:2px;">Vínculo: cx ${s.ParCaixa || '?'} <button class="link-action" data-consultar-par="${s.Id}" style="font-size:11px; border:none; background:none; cursor:pointer;">Ver</button></div>`
             : `<div style="font-weight:400; font-size:11px; color:var(--text-light); margin-top:2px;">Sem vínculo</div>`
@@ -309,7 +311,7 @@ function modalFormHtml(s) {
       <button type="button" class="btn-secondary" id="btn-novo-tipo" style="white-space:nowrap;" title="Criar novo tipo de sensor">+ Novo tipo</button>
     </div>
 
-    <div class="field-group grid" id="grid-basico" style="grid-template-columns:1fr 1fr;">
+    <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
       <div data-secao="distancia"><span class="field-label">Distância</span><input id="m-distancia" list="dist-list" value="${s.Distancia || ''}" placeholder="Selecione o tipo ou digite"><datalist id="dist-list"></datalist></div>
       <div><span class="field-label">Nº Caixa</span><input id="m-caixa" value="${s.Caixa || ''}"></div>
     </div>
@@ -461,7 +463,7 @@ function wireModalEvents(sensor) {
       const opcoes = candidatos.filter(c => c.Id !== idAtual);
       const parSelecionadoAtual = idAtual ? sensor.ParSensorId : null;
       parSelect.innerHTML = '<option value="">Nenhum</option>' + opcoes.map(c =>
-      `<option value="${c.Id}" ${parSelecionadoAtual === c.Id ? 'selected' : ''}>${c.Caixa ? 'Cx ' + c.Caixa + ' — ' : ''}${c.Nome}${c.Papel ? ' — ' + c.Papel : ''}</option>`
+        `<option value="${c.Id}" ${parSelecionadoAtual === c.Id ? 'selected' : ''}>${c.Caixa ? 'Cx ' + c.Caixa + ' — ' : ''}${c.Nome}${c.Papel ? ' — ' + c.Papel : ''}</option>`
       ).join('');
     } catch (err) {
       parSelect.innerHTML = '<option value="">Erro ao carregar</option>';
@@ -492,10 +494,6 @@ function wireModalEvents(sensor) {
       showError(err.message.toLowerCase().includes('duplicate') || err.message.toLowerCase().includes('unique')
         ? 'Esse tipo já existe.' : err.message);
     }
-  });
-
-  document.getElementById('m-formato').addEventListener('change', (e) => {
-    document.getElementById('rosca-field').classList.toggle('hidden', e.target.value !== 'Cilíndrico roscado');
   });
 
   document.querySelectorAll('#m-formaComutacao .toggle-btn').forEach(btn => {

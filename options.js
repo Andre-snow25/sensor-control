@@ -58,7 +58,7 @@ const CAMPOS_POR_TIPO = {
   'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao'],
   'Botoeira': ['tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
   'Cabo de Sensor': ['formato', 'ip', 'conexao', 'material', 'aplicacao', 'genero', 'pinos', 'tamanho'],
-  'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao'],
+  'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao', 'par'],
   'Chave Fim de Curso': ['logica', 'formato', 'ip', 'material', 'aplicacao'],
   'Ponte Retificadora': ['aplicacao'],
   'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
