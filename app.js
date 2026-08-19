@@ -82,11 +82,18 @@ async function renderLista() {
   let sensoresRestantes = sensoresDoTipo;
   secoesFiltraveis.forEach(secao => {
     const campo = SECAO_PARA_CAMPO[secao];
-    opcoesPorSecao[secao] = [...new Set(sensoresRestantes.map(s => s[campo]).filter(Boolean))].sort();
+    if (secao === 'recursos') {
+      // Recursos é uma lista (um sensor pode ter vários) — precisa "achatar"
+      opcoesPorSecao[secao] = [...new Set(sensoresRestantes.flatMap(s => s.Recursos || []))].sort();
+    } else {
+      opcoesPorSecao[secao] = [...new Set(sensoresRestantes.map(s => s[campo]).filter(Boolean))].sort();
+    }
     const chaveFiltro = SECAO_PARA_FILTRO[secao];
     const valorSelecionado = state.filtros[chaveFiltro];
     if (valorSelecionado) {
-      sensoresRestantes = sensoresRestantes.filter(s => s[campo] === valorSelecionado);
+      sensoresRestantes = secao === 'recursos'
+        ? sensoresRestantes.filter(s => (s.Recursos || []).includes(valorSelecionado))
+        : sensoresRestantes.filter(s => s[campo] === valorSelecionado);
     }
   });
 

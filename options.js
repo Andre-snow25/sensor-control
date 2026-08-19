@@ -98,7 +98,7 @@ const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
   formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
   material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos', tamanho: 'Tamanho',
-  papel: 'Papel'
+  papel: 'Papel', recursos: 'Recursos'
 };
 
 // Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
@@ -106,7 +106,7 @@ const SECAO_PARA_FILTRO = {
   distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
   formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
   material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho',
-  papel: 'papel'
+  papel: 'papel', recursos: 'recursos'
 };
 
 // Rótulos amigáveis pra cada seção, usados nos filtros
@@ -114,9 +114,12 @@ const SECAO_LABEL = {
   distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
   formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
   material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos', tamanho: 'Tamanho',
-  papel: 'Emissor / Receptor'
+  papel: 'Emissor / Receptor', recursos: 'Recursos'
 };
-// Observação: a seção "par" (sensor vinculado) é tratada à parte no app.js —
+// Observação 1: "recursos" é um campo de lista (um sensor pode ter vários),
+// diferente dos demais que são valor único — por isso tem tratamento
+// especial no app.js (tanto pra montar as opções quanto pra filtrar).
+// Observação 2: a seção "par" (sensor vinculado) é tratada à parte no app.js —
 // não entra nesses mapeamentos porque não é um dropdown comum, é uma busca/vínculo.
 
 // Lista de campos usada como padrão pra tipos que NÃO têm entrada em

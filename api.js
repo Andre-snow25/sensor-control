@@ -62,6 +62,17 @@ const Api = {
       query = query.ilike('caixa', `%${filtros.caixa.replace(/^0+/, '') || filtros.caixa}%`);
     }
 
+    // Recursos é uma relação N:N (um sensor pode ter vários) — busca antes
+    // quais sensores têm esse recurso, e filtra a consulta principal por ID
+    if (filtros.recursos) {
+      const comRecurso = await checarErro(
+        supabaseClient.from('sensor_recursos').select('sensor_id').eq('recurso', filtros.recursos),
+        'Erro ao buscar recursos'
+      );
+      const idsComRecurso = comRecurso.map(r => r.sensor_id);
+      query = query.in('id', idsComRecurso.length > 0 ? idsComRecurso : [0]);
+    }
+
     if (filtros.busca) {
       query = query.or(`nome.ilike.%${filtros.busca}%,marca.ilike.%${filtros.busca}%`);
     }
