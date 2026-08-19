@@ -31,7 +31,7 @@ const ROSCA_OPTS = ['M8', 'M12', 'M18', 'M30'];
 const IP_OPTS = ['IP65', 'IP67', 'IP68', 'IP69K'];
 const CONEXAO_OPTS = ['Conector M8', 'Conector M12', 'Cabo integral 2m', 'Cabo integral 5m', 'Jumper M8xM12'];
 const MATERIAL_OPTS = ['Latão niquelado', 'Aço inox', 'PBT (plástico)', 'ABS'];
-const APLICACAO_OPTS = ['Detecção de metal', 'Detecção de nível', 'Detecção de presença', 'Contagem de peças', 'Posicionamento de cilindro', 'Conexão de sensores', 'Segurança', 'Detecção de Posição', 'Motores elétricos'];
+const APLICACAO_OPTS = ['Detecção de metal', 'Detecção de nível', 'Detecção de presença', 'Contagem de peças', 'Posicionamento de cilindro', 'Conexão de sensores', 'Segurança', 'Detecção de Posição', 'Motores elétricos', 'Detecção de Pressão'];
 const RECURSOS_OPTS = ['Ajuste de sensibilidade', 'LED indicador', 'Blindado', 'Não blindado', 'Resistente a EMI', 'Saída temporizada'];
 
 const CILINDRO_TIPO_OPTS = ['Magnético', 'Indutivo'];
@@ -63,7 +63,8 @@ const CAMPOS_POR_TIPO = {
   'Ponte Retificadora': ['aplicacao'],
   'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
   'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par'],
-  'Sensor de Cilindro': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao']
+  'Sensor de Cilindro': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao'],
+  'Sensor de Pressão': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
