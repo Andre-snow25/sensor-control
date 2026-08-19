@@ -50,11 +50,18 @@ const Api = {
       tipo: 'tipo', distancia: 'distancia', tipoSaida: 'tipo_saida',
       logica: 'logica_saida', tensao: 'tensao', formato: 'formato',
       rosca: 'rosca', ip: 'ip', conexao: 'conexao', material: 'material',
-      aplicacao: 'aplicacao', caixa: 'caixa', formaComutacao: 'forma_comutacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho', papel: 'papel'
+      aplicacao: 'aplicacao', formaComutacao: 'forma_comutacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho', papel: 'papel'
     };
     Object.entries(mapaFiltros).forEach(([key, coluna]) => {
       if (filtros[key]) query = query.eq(coluna, filtros[key]);
     });
+
+    // Caixa usa "contém" em vez de "igual exato", pra "83" encontrar "083"
+    // (e também aceitar buscas parciais, como já acontece no campo de busca)
+    if (filtros.caixa) {
+      query = query.ilike('caixa', `%${filtros.caixa.replace(/^0+/, '') || filtros.caixa}%`);
+    }
+
     if (filtros.busca) {
       query = query.or(`nome.ilike.%${filtros.busca}%,marca.ilike.%${filtros.busca}%`);
     }
