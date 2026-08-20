@@ -69,7 +69,9 @@ async function render() {
 async function renderLista() {
   const tipoSelecionado = state.filtros.tipo;
   const secoesAtivas = tipoSelecionado ? (CAMPOS_POR_TIPO[tipoSelecionado] || FILTROS_PADRAO) : [];
-  const secoesFiltraveis = secoesAtivas.filter(s => SECAO_PARA_FILTRO[s]); // recursos/cilindro/par não viram dropdown de filtro
+  const secoesFiltraveis = secoesAtivas
+    .filter(s => SECAO_PARA_FILTRO[s]) // recursos/cilindro/par não viram dropdown de filtro
+    .filter(s => s !== 'rosca' || state.filtros.formato === 'Cilíndrico roscado'); // rosca só aparece com esse formato selecionado
 
   // Busca todos os sensores do tipo selecionado (ignorando os demais filtros)
   // e vai estreitando progressivamente: as opções do 2º filtro consideram
