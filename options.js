@@ -56,17 +56,17 @@ const PAPEL_BARREIRA_OPTS = ['Emissor', 'Receptor', 'Emissor/Receptor'];
 const CAMPOS_POR_TIPO = {
   'Conectores': ['formato', 'conexao', 'ip', 'material', 'aplicacao', 'genero', 'pinos', 'recursos'],
   'Espelho Reflexivo': ['formato', 'tamanho', 'ip', 'material', 'aplicacao'],
-  'Botoeira': ['tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
+  'Botoeira': ['tipoSaida', 'logica', 'tensao', 'formato', 'rosca', 'ip', 'conexao', 'material', 'aplicacao'],
   'Cabo de Sensor': ['formato', 'ip', 'conexao', 'material', 'aplicacao', 'genero', 'pinos', 'tamanho'],
   'Chave de Segurança': ['logica', 'tensao', 'formato', 'ip', 'material', 'aplicacao', 'par'],
   'Chave Fim de Curso': ['logica', 'formato', 'ip', 'material', 'aplicacao'],
   'Ponte Retificadora': ['aplicacao'],
-  'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao'],
-  'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par'],
+  'Sensor Capacitivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'rosca', 'ip', 'conexao', 'material', 'aplicacao'],
+  'Sensor de Barreira': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'rosca', 'ip', 'conexao', 'material', 'aplicacao', 'papel', 'par'],
   'Sensor de Cilindro': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao'],
   'Sensor de Pressão': ['tipoSaida', 'logica', 'tensao', 'ip', 'conexao', 'material', 'aplicacao'],
   'Sensor Fibra Optica': ['tipoSaida', 'logica', 'tensao', 'ip', 'material', 'aplicacao'],
-  'Sensor Fotoelétrico Difuso': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'recursos']
+  'Sensor Fotoelétrico Difuso': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'rosca', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'recursos']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
@@ -96,7 +96,7 @@ const CONEXAO_OPTS_POR_TIPO = {
 // Liga cada "seção" ao nome do campo (Pascal, como vem da API) correspondente
 const SECAO_PARA_CAMPO = {
   distancia: 'Distancia', tipoSaida: 'TipoSaida', logica: 'LogicaSaida', tensao: 'Tensao',
-  formaComutacao: 'FormaComutacao', formato: 'Formato', ip: 'IP', conexao: 'Conexao',
+  formaComutacao: 'FormaComutacao', formato: 'Formato', rosca: 'Rosca', ip: 'IP', conexao: 'Conexao',
   material: 'Material', aplicacao: 'Aplicacao', genero: 'Genero', pinos: 'Pinos', tamanho: 'Tamanho',
   papel: 'Papel', recursos: 'Recursos'
 };
@@ -104,7 +104,7 @@ const SECAO_PARA_CAMPO = {
 // Liga cada "seção" à chave de filtro usada nas queries (usada pelo Api.listarSensores)
 const SECAO_PARA_FILTRO = {
   distancia: 'distancia', tipoSaida: 'tipoSaida', logica: 'logica', tensao: 'tensao',
-  formaComutacao: 'formaComutacao', formato: 'formato', ip: 'ip', conexao: 'conexao',
+  formaComutacao: 'formaComutacao', formato: 'formato', rosca: 'rosca', ip: 'ip', conexao: 'conexao',
   material: 'material', aplicacao: 'aplicacao', genero: 'genero', pinos: 'pinos', tamanho: 'tamanho',
   papel: 'papel', recursos: 'recursos'
 };
@@ -112,7 +112,7 @@ const SECAO_PARA_FILTRO = {
 // Rótulos amigáveis pra cada seção, usados nos filtros
 const SECAO_LABEL = {
   distancia: 'Distância', tipoSaida: 'Tipo de saída', logica: 'Lógica de saída', tensao: 'Tensão',
-  formaComutacao: 'Forma de comutação', formato: 'Formato', ip: 'Grau de proteção', conexao: 'Conexão',
+  formaComutacao: 'Forma de comutação', formato: 'Formato', rosca: 'Rosca', ip: 'Grau de proteção', conexao: 'Conexão',
   material: 'Material', aplicacao: 'Aplicação', genero: 'Macho / Fêmea', pinos: 'Quantidade de pinos', tamanho: 'Tamanho',
   papel: 'Emissor / Receptor', recursos: 'Recursos'
 };
