@@ -27,7 +27,7 @@ const FORMA_COMUTACAO_DESC = {
 };
 
 const FORMATO_OPTS = ['Cilíndrico roscado', 'Cilíndrico liso', 'Retangular', 'Miniatura', 'Garfo'];
-const ROSCA_OPTS = ['M8', 'M12', 'M18', 'M30'];
+const ROSCA_OPTS = ['M5', 'M8', 'M12', 'M18', 'M30'];
 const IP_OPTS = ['IP65', 'IP67', 'IP68', 'IP69K'];
 const CONEXAO_OPTS = ['Conector M8', 'Conector M12', 'Cabo integral 2m', 'Cabo integral 5m', 'Jumper M8xM12'];
 const MATERIAL_OPTS = ['Latão niquelado', 'Aço inox', 'PBT (plástico)', 'ABS'];
