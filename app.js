@@ -223,6 +223,7 @@ function chunk(array, tamanho) {
 function sensorRowHtml(s) {
   const secoes = CAMPOS_POR_TIPO[s.Tipo] || FILTROS_PADRAO;
   const valoresSecoes = secoes
+    .filter(sec => sec !== 'recursos') // recursos é lista, tratado à parte abaixo
     .map(sec => SECAO_PARA_CAMPO[sec] ? s[SECAO_PARA_CAMPO[sec]] : null)
     .filter(Boolean);
   const specsAll = [s.Tipo, ...valoresSecoes, ...(s.Recursos || [])].filter(Boolean);
