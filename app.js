@@ -363,9 +363,10 @@ function modalFormHtml(s) {
       <div data-secao="aplicacao"><span class="field-label">Aplicação</span>${selectFull('m-aplicacao', APLICACAO_OPTS, s.Aplicacao)}</div>
     </div>
 
-    <div data-secao="genero,pinos" class="field-group grid" style="grid-template-columns:1fr 1fr;">
+    <div data-secao="genero,pinos,cabeca" class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
       <div data-secao="genero"><span class="field-label">Macho / Fêmea</span>${selectFull('m-genero', GENERO_OPTS, s.Genero)}</div>
       <div data-secao="pinos"><span class="field-label">Quantidade de pinos</span>${selectFull('m-pinos', PINOS_OPTS, s.Pinos)}</div>
+      <div data-secao="cabeca"><span class="field-label">Cabeça</span>${selectFull('m-cabeca', CABECA_OPTS, s.Cabeca)}</div>
     </div>
 
     <div data-secao="tamanho" class="field-group">
@@ -644,6 +645,7 @@ async function salvarSensor() {
       CilindroFios: val('m-cilindroFios'),
       Genero: val('m-genero'),
       Pinos: val('m-pinos'),
+      Cabeca: val('m-cabeca'),
       Tamanho: val('m-tamanho'),
       Papel: val('m-papel'),
       MarcaLogoUrl: marcaLogoUrl,
