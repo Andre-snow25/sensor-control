@@ -72,7 +72,8 @@ const CAMPOS_POR_TIPO = {
   'Sensor Fotoelétrico Refletivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formaComutacao', 'formato', 'rosca', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'recursos'],
   'Sensor de Dupla Chapa': ['tipoSaida', 'logica', 'tensao'],
   'Sensor Indutivo': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'cabeca'],
-  'Sensor Optico Distância': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'recursos']
+  'Sensor Optico Distância': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao', 'pinos', 'recursos'],
+  'Sensor Ultrassônico': ['distancia', 'tipoSaida', 'logica', 'tensao', 'formato', 'ip', 'conexao', 'material', 'aplicacao']
 };
 
 // Sobrescreve as opções do campo "Formato" pra tipos específicos.
