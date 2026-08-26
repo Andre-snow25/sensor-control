@@ -130,7 +130,10 @@ async function renderLista() {
         <h1 class="page-title">Sensores</h1>
         <div class="page-subtitle">${state.sensores.length} sensor(es) cadastrado(s)</div>
       </div>
-      <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-secondary" id="btn-exportar-pdf">Exportar PDF</button>
+        <button class="btn-primary" id="btn-novo-sensor">+ Novo Sensor</button>
+      </div>
     </div>
 
     <div class="card" style="padding:0; max-height:calc(100vh - 190px); overflow:auto;">
@@ -150,6 +153,7 @@ async function renderLista() {
   `;
 
   document.getElementById('btn-novo-sensor').addEventListener('click', () => openModal());
+  document.getElementById('btn-exportar-pdf').addEventListener('click', () => exportarPdf(state.sensores));
   document.getElementById('btn-limpar-filtros').addEventListener('click', () => { state.filtros = {}; render(); });
 
   const filterMap = { 'f-busca': 'busca', 'f-caixa': 'caixa', 'f-tipo': 'tipo' };
@@ -218,6 +222,129 @@ function chunk(array, tamanho) {
     resultado.push(array.slice(i, i + tamanho));
   }
   return resultado;
+}
+
+// ============================================================
+// Exportar lista de sensores em PDF (com fotos)
+// ============================================================
+async function imagemParaBase64(url) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (err) {
+    return null;
+  }
+}
+
+function formatoImagem(dataUrl) {
+  if (!dataUrl) return 'JPEG';
+  if (dataUrl.startsWith('data:image/png')) return 'PNG';
+  if (dataUrl.startsWith('data:image/webp')) return 'WEBP';
+  return 'JPEG';
+}
+
+async function exportarPdf(sensores) {
+  if (!sensores || sensores.length === 0) {
+    showError('Não há sensores pra exportar com os filtros atuais.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-exportar-pdf');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const margemX = 14;
+    const larguraPagina = doc.internal.pageSize.getWidth();
+    const alturaPagina = doc.internal.pageSize.getHeight();
+    let y = 18;
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Lista de Sensores', margemX, y);
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(120);
+    y += 6;
+    doc.text(`${sensores.length} sensor(es) — gerado em ${new Date().toLocaleString('pt-BR')}`, margemX, y);
+    doc.setTextColor(0);
+    y += 8;
+
+    for (let i = 0; i < sensores.length; i++) {
+      btn.textContent = `Gerando... (${i + 1}/${sensores.length})`;
+      const s = sensores[i];
+      const alturaBloco = 34;
+
+      // Quebra de página se não couber o próximo bloco
+      if (y + alturaBloco > alturaPagina - 12) {
+        doc.addPage();
+        y = 18;
+      }
+
+      // Linha separadora
+      doc.setDrawColor(224);
+      doc.line(margemX, y, larguraPagina - margemX, y);
+      y += 5;
+
+      // Foto (se tiver)
+      const fotoX = margemX;
+      const fotoTam = 24;
+      if (s.FotoUrl) {
+        const base64 = await imagemParaBase64(s.FotoUrl);
+        if (base64) {
+          try { doc.addImage(base64, formatoImagem(base64), fotoX, y, fotoTam, fotoTam); } catch (e) { /* ignora imagem que falhar */ }
+        }
+      }
+
+      // Texto ao lado da foto
+      const textoX = fotoX + fotoTam + 6;
+      let textoY = y + 4;
+
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'bold');
+      doc.text(s.Nome || 'Sem nome', textoX, textoY);
+      textoY += 5;
+
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(90);
+      doc.text(`Caixa: ${s.Caixa || '—'}   |   Cód. Fab.: ${s.CodFabricante || '—'}   |   Cód. DV: ${s.CodDV || '—'}`, textoX, textoY);
+      textoY += 4.5;
+      doc.text(`Marca: ${s.Marca || '—'}   |   Estoque: ${s.Estoque ?? 0}`, textoX, textoY);
+      textoY += 4.5;
+      doc.setTextColor(0);
+
+      // Especificações (mesma lógica usada na listagem)
+      const secoes = (CAMPOS_POR_TIPO[s.Tipo] || FILTROS_PADRAO).filter(sec => sec !== 'recursos');
+      const valoresSecoes = secoes.map(sec => SECAO_PARA_CAMPO[sec] ? s[SECAO_PARA_CAMPO[sec]] : null).filter(Boolean);
+      const specs = [s.Tipo, ...valoresSecoes, ...(s.Recursos || [])].filter(Boolean);
+      if (specs.length > 0) {
+        doc.setFontSize(8.5);
+        doc.setTextColor(70);
+        const linhaSpecs = doc.splitTextToSize(specs.join('  •  '), larguraPagina - textoX - margemX);
+        doc.text(linhaSpecs, textoX, textoY);
+        textoY += linhaSpecs.length * 3.8;
+        doc.setTextColor(0);
+      }
+
+      y += alturaBloco;
+    }
+
+    doc.save(`sensores-${new Date().toISOString().slice(0, 10)}.pdf`);
+  } catch (err) {
+    showError('Erro ao gerar o PDF: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
 }
 
 function sensorRowHtml(s) {
