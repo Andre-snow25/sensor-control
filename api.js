@@ -196,6 +196,15 @@ const Api = {
     return data.publicUrl;
   },
 
+  // ---------- Números de caixa em uso (pra sugerir os livres no cadastro) ----------
+  async listarCaixas() {
+    const linhas = await checarErro(
+      supabaseClient.from('sensores').select('caixa'),
+      'Erro ao buscar números de caixa'
+    );
+    return linhas.map(l => l.caixa).filter(Boolean);
+  },
+
   // ---------- Tipos de sensores ----------
   async listarTipos() {
     const linhas = await checarErro(

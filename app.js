@@ -323,7 +323,7 @@ function modalFormHtml(s) {
 
     <div class="field-group grid" style="grid-template-columns:1fr 1fr;">
       <div data-secao="distancia"><span class="field-label">Distância</span><input id="m-distancia" list="dist-list" value="${s.Distancia || ''}" placeholder="Selecione o tipo ou digite"><datalist id="dist-list"></datalist></div>
-      <div><span class="field-label">Nº Caixa</span><input id="m-caixa" value="${s.Caixa || ''}"></div>
+      <div><span class="field-label">Nº Caixa</span><select id="m-caixa" style="width:100%;"><option value="${s.Caixa || ''}">${s.Caixa || 'Carregando...'}</option></select></div>
     </div>
 
     <div data-secao="tipoSaida,logica,tensao" class="field-group grid" style="grid-template-columns:1fr 1fr 1fr;">
@@ -428,7 +428,10 @@ function wireModalEvents(sensor) {
   // Mostra só as seções relevantes pro tipo selecionado. Tipos que não têm
   // uma entrada em CAMPOS_POR_TIPO mostram o formulário completo (padrão).
   function aplicarCamposPorTipo() {
-    const camposVisiveis = CAMPOS_POR_TIPO[tipoSelect.value] || null; // null = mostrar tudo
+    // Sem tipo selecionado: não mostra NENHUM campo extra (só os básicos).
+    // Com tipo selecionado mas sem entrada em CAMPOS_POR_TIPO: mostra tudo
+    // (mantém sensores antigos de tipos "legados" funcionando).
+    const camposVisiveis = tipoSelect.value === '' ? [] : (CAMPOS_POR_TIPO[tipoSelect.value] || null);
     document.querySelectorAll('[data-secao]').forEach(el => {
       const secoes = el.dataset.secao.split(',');
       const mostrar = camposVisiveis === null || secoes.some(s => camposVisiveis.includes(s));
@@ -481,9 +484,40 @@ function wireModalEvents(sensor) {
     }
   }
 
+  // Carrega a lista de números de caixa ainda livres (1 a 200), pra você
+  // escolher em vez de digitar e correr risco de repetir um número em uso.
+  async function carregarCaixasDisponiveis() {
+    const caixaSelect = document.getElementById('m-caixa');
+    caixaSelect.innerHTML = '<option value="">Carregando...</option>';
+    try {
+      const usadas = await Api.listarCaixas();
+      const usadasSet = new Set(usadas.filter(Boolean));
+      const valorAtual = sensor.Caixa || '';
+      // Se está editando de verdade (não duplicando), a própria caixa não
+      // deve contar como "ocupada" — senão ela mesma sumiria da lista
+      if (state.editSensorId && valorAtual) usadasSet.delete(valorAtual);
+
+      const disponiveis = [];
+      for (let n = 1; n <= 200; n++) {
+        const num = String(n).padStart(3, '0');
+        if (!usadasSet.has(num)) disponiveis.push(num);
+      }
+      // Garante que o valor atual apareça mesmo se estiver fora do padrão
+      // "3 dígitos" (ex: uma caixa antiga cadastrada só como "8")
+      let opcoes = disponiveis;
+      if (valorAtual && !opcoes.includes(valorAtual)) opcoes = [valorAtual, ...opcoes];
+
+      caixaSelect.innerHTML = '<option value="">Selecione...</option>' +
+        opcoes.map(c => `<option value="${c}" ${valorAtual === c ? 'selected' : ''}>${c}</option>`).join('');
+    } catch (err) {
+      caixaSelect.innerHTML = `<option value="${sensor.Caixa || ''}">${sensor.Caixa || 'Erro ao carregar'}</option>`;
+    }
+  }
+
   atualizarDistancia();
   aplicarCamposPorTipo();
   atualizarParSelect();
+  carregarCaixasDisponiveis();
   tipoSelect.addEventListener('change', () => {
     atualizarDistancia();
     aplicarCamposPorTipo();
