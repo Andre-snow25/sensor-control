@@ -16,7 +16,7 @@ const DISTANCIA_MAP = {
   'Sensor Capacitivo': ['10mm']
 };
 
-const TIPO_SAIDA_OPTS = ['PNP', 'NPN', 'Relé', 'Analógico 4-20mA', 'Analógico 0-10V'];
+const TIPO_SAIDA_OPTS = ['PNP', 'NPN', 'Relé', 'Analógico 4-20mA', 'Analógico 0-10V', 'Analógico 4-20mA / 0-10V'];
 const LOGICA_OPTS = ['NA (Normalmente Aberto)', 'NF (Normalmente Fechado)', 'NA/NF'];
 const TENSAO_OPTS = ['10–30 VDC', '12–24 VDC', '24 VDC', '90–250 VAC'];
 
